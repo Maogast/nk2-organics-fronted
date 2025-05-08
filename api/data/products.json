@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Activated Charcoal",
+    "description": "Soothing herbal tea with natural ingredients.",
+    "price": 250,
+    "imageUrl": "/images/activated-charcoal.jpg"
+  },
+  {
+    "name": "Eucalyptus Oil",
+    "description": "A blend of organic spices perfect for your cooking.",
+    "price": 300,
+    "imageUrl": "/images/eucalyptus-oil.jpg"
+  }
+]
