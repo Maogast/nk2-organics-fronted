@@ -41,8 +41,8 @@ const AdminDashboard = () => {
   // Fetch orders – wrapped in useCallback so its reference stays stable.
   const fetchOrders = useCallback(async () => {
     try {
-      // Include the admin email header in the request.
-      const res = await axios.get('http://localhost:5000/api/orders', {
+      // Use a relative URL so that the request is routed via Vercel.
+      const res = await axios.get('/api/orders', {
         headers: { 'x-admin-email': adminEmail },
       });
       setOrders(res.data.orders);
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/orders/${orderId}`,
+        `/api/orders/${orderId}`,
         { status: newStatus },
         { headers: { 'x-admin-email': adminEmail } }
       );
@@ -96,11 +96,11 @@ const AdminDashboard = () => {
     try {
       // eslint-disable-next-line no-unused-vars
       const res = await axios.put(
-        `http://localhost:5000/api/orders/${orderId}/confirm-payment`,
+        `/api/orders/${orderId}/confirm-payment`,
         {},
         { headers: { 'x-admin-email': adminEmail } }
       );
-      // We don't use 'res' here, so the above comment prevents ESLint from issuing a warning.
+      // We don't use 'res' here so the above comment prevents ESLint from issuing a warning.
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order._id === orderId ? { ...order, paymentStatus: 'confirmed' } : order
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
   const handleDelete = async (orderId) => {
     if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
       try {
-        await axios.delete(`http://localhost:5000/api/orders/${orderId}`, {
+        await axios.delete(`/api/orders/${orderId}`, {
           headers: { 'x-admin-email': adminEmail },
         });
         setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
