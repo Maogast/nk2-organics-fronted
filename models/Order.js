@@ -12,15 +12,13 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   totalPrice: { type: Number, required: true },
-  // New fields for capturing payment details:
-  transactionId: { type: String, default: "" }, // Stores the Mpesa transaction ID (e.g., TE82UXIK7O)
+  transactionId: { type: String, default: "" },
   paymentStatus: {
-    // Tracks the payment's confirmation state.
     type: String,
     enum: ['pending', 'confirmed'],
     default: 'pending',
   },
-  status: { type: String, default: 'pending' }, // Order processing status.
+  status: { type: String, default: 'pending' },
   createdAt: { type: Date, default: Date.now },
 });
 

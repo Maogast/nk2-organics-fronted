@@ -1,0 +1,345 @@
+[
+  {
+    "name": "Activated Charcoal",
+    "description": "is known for its ability to bind to toxins and impurities in the body, helping to flush them out.",
+    "price": 250,
+    "imageUrl": "/images/activated-charcoal.jpg",
+    "category": "Herbs"
+  },
+  {
+    "name": "Eucalyptus Oil",
+    "description": "It is commonly used in aromatherapy to relieve respiratory issues, boost mental clarity, and reduce stress.",
+    "price": 300,
+    "imageUrl": "/images/eucalyptus-oil.jpg",
+    "category": "Essential Oils"
+  },
+  {
+    "name": "Turmeric",
+    "description": "Anti-inflammatory",
+    "price": 200,
+    "imageUrl": "/images/turmeric.JPG",
+    "category": "Spice"
+  },
+  {
+    "name": "Cinnamon",
+    "description": "Improves digestion",
+    "price": 200,
+    "imageUrl": "/images/cinnamon.JPG",
+    "category": "Herbs"
+  },
+  {
+    "name": "Ginger",
+    "description": "Digestive aid, often used fresh/dried",
+    "price": 200,
+    "imageUrl": "/images/ginger.JPG",
+    "category": "Herbs"
+  },
+  {
+    "name": "Basil",
+    "description": "Supports heart health, reduces inflammation",
+    "price": 200,
+    "imageUrl": "/images/basil.JPG",
+    "category": "Herbs"
+  },
+  {
+    "name": "Parsley",
+    "description": "High in vitamin K, promotes bone health, aids digestion",
+    "price": 200,
+    "imageUrl": "/images/parsley.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Mint",
+    "description": "Relieves indigestion, soothes headaches, freshens breath",
+    "price": 200,
+    "imageUrl": "/images/mint.JPG",
+    "category": "Herbs"
+  },
+  {
+    "name": "Oregano",
+    "description": "Boosts immunity, antibacterial properties, supports respiratory health",
+    "price": 200,
+    "imageUrl": "/images/oregano.JPG",
+    "category": "Herbs"
+  },
+  {
+    "name": "Vanilla",
+    "description": "Pure, aromatic pods for desserts",
+    "price": 500,
+    "imageUrl": "/images/vanilla.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Nutmeg",
+    "description": "Adds warmth to custards, lattes",
+    "price": 150,
+    "imageUrl": "/images/nutmeg.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Cloves",
+    "description": "Intense aroma for gingerbread, mulled cider",
+    "price": 160,
+    "imageUrl": "/images/cloves.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Star Anise",
+    "description": "Licorice flavor for Asian dishes",
+    "price": 300,
+    "imageUrl": "/images/star_anise.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Sumac",
+    "description": "Tangy Middle Eastern garnish",
+    "price": 250,
+    "imageUrl": "/images/sumac.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Ashwagandha",
+    "description": "Adaptogen for stress relief",
+    "price": 300,
+    "imageUrl": "/images/ashwagandha.JPG",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Holy Basil (Tulsi)",
+    "description": "Supports immunity and clarity",
+    "price": 300,
+    "imageUrl": "/images/holy_basil.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Lemon-grass",
+    "description": "Calming and anti-inflammatory properties",
+    "price": 300,
+    "imageUrl": "/images/lemon_grass.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Echinacea",
+    "description": "Boosts immune system, reduces cold symptoms",
+    "price": 300,
+    "imageUrl": "/images/echinacea.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Chamomile",
+    "description": "Promotes relaxation and better sleep",
+    "price": 300,
+    "imageUrl": "/images/chamomile.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Thyme",
+    "description": "Antimicrobial properties, supports respiratory health",
+    "price": 300,
+    "imageUrl": "/images/thyme2.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Rosemary",
+    "description": "Enhances memory and cognitive function",
+    "price": 300,
+    "imageUrl": "/images/rosemary2.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Saffron",
+    "description": "Rich in antioxidants, enhances mood",
+    "price": 500,
+    "imageUrl": "/images/saffron.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Fenugreek",
+    "description": "Supports lactation and improves digestion",
+    "price": 300,
+    "imageUrl": "/images/fenugreek.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Garam Masala",
+    "description": "Aromatic blend for Indian cuisine",
+    "price": 300,
+    "imageUrl": "/images/garam_masala.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Annatto",
+    "description": "Natural food coloring, rich in antioxidants",
+    "price": 300,
+    "imageUrl": "/images/annatto.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Allspice",
+    "description": "Warm flavor for desserts and stews",
+    "price": 400,
+    "imageUrl": "/images/allspice.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Cardamom",
+    "description": "Aids digestion, freshens breath",
+    "price": 400,
+    "imageUrl": "/images/cardamom.png",
+    "category": "Global & Specialty Spices"
+  },
+  {
+    "name": "Black Pepper",
+    "description": "Rich in antioxidants, improves nutrient absorption",
+    "price": 250,
+    "imageUrl": "/images/black_pepper.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Coriander",
+    "description": "Supports digestion, anti-inflammatory properties",
+    "price": 200,
+    "imageUrl": "/images/coriander_powder.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Fennel Seeds",
+    "description": "Improves digestion, reduces bloating",
+    "price": 200,
+    "imageUrl": "/images/fennel_seeds.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Bay Leaves",
+    "description": "Enhances flavor, supports respiratory health",
+    "price": 150,
+    "imageUrl": "/images/bay_leaves.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Paprika",
+    "description": "Rich in vitamins, adds vibrant color to dishes",
+    "price": 180,
+    "imageUrl": "/images/paprika.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Chili Powder",
+    "description": "Boosts metabolism, adds heat to dishes",
+    "price": 200,
+    "imageUrl": "/images/chili_powder.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Cumin",
+    "description": "Aids digestion, boosts immunity",
+    "price": 200,
+    "imageUrl": "/images/cumin.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Sage",
+    "description": "Improves brain function, supports oral health",
+    "price": 300,
+    "imageUrl": "/images/sage.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Lavender",
+    "description": "Promotes relaxation, reduces stress",
+    "price": 350,
+    "imageUrl": "/images/lavender.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Peppermint",
+    "description": "Relieves headaches, soothes digestion",
+    "price": 300,
+    "imageUrl": "/images/peppermint.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Onion Powder",
+    "description": "Adds depth to dishes, rich in antioxidants",
+    "price": 200,
+    "imageUrl": "/images/onion_powder.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Mustard Seeds",
+    "description": "Rich in selenium, supports metabolism",
+    "price": 180,
+    "imageUrl": "/images/mustard_seeds.png",
+    "category": "Spice"
+  },
+  {
+    "name": "Dill",
+    "description": "Supports digestion, rich in antioxidants",
+    "price": 200,
+    "imageUrl": "/images/dill.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Tarragon",
+    "description": "Improves appetite, supports heart health",
+    "price": 250,
+    "imageUrl": "/images/tarragon.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Chives",
+    "description": "Rich in vitamins, enhances flavor",
+    "price": 200,
+    "imageUrl": "/images/chives.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Fenugreek Leaves",
+    "description": "Rich in iron, supports digestion",
+    "price": 220,
+    "imageUrl": "/images/fenugreek_leaves.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Jaggery",
+    "description": "Natural sweetener, rich in minerals",
+    "price": 150,
+    "imageUrl": "/images/jaggery.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Cinnamon Sticks",
+    "description": "Adds warmth to beverages and desserts",
+    "price": 200,
+    "imageUrl": "/images/cinnamon_sticks.png",
+    "category": "Baking & Sweet Spices"
+  },
+  {
+    "name": "Moringa Powder",
+    "description": "Rich in nutrients, boosts energy",
+    "price": 300,
+    "imageUrl": "/images/moringa_powder.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Spirulina",
+    "description": "High in protein, supports detoxification",
+    "price": 400,
+    "imageUrl": "/images/spirulina.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Matcha Powder",
+    "description": "Rich in antioxidants, boosts focus",
+    "price": 500,
+    "imageUrl": "/images/matcha_powder.png",
+    "category": "Wellness-Focused Herbs"
+  },
+  {
+    "name": "Elderberry",
+    "description": "Supports immune health, rich in antioxidants",
+    "price": 300,
+    "imageUrl": "/images/elderberry.png",
+    "category": "Wellness-Focused Herbs"
+  }
+]
