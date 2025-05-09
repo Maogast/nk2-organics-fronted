@@ -1,4 +1,3 @@
-// models/Order.js
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -13,7 +12,15 @@ const orderSchema = new mongoose.Schema({
     },
   ],
   totalPrice: { type: Number, required: true },
-  status: { type: String, default: 'pending' }, // NEW: Track the status of the order.
+  // New fields for capturing payment details:
+  transactionId: { type: String, default: "" }, // Stores the Mpesa transaction ID (e.g., TE82UXIK7O)
+  paymentStatus: {
+    // Tracks the payment's confirmation state.
+    type: String,
+    enum: ['pending', 'confirmed'],
+    default: 'pending',
+  },
+  status: { type: String, default: 'pending' }, // Order processing status.
   createdAt: { type: Date, default: Date.now },
 });
 

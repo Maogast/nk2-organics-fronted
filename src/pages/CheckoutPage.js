@@ -1,4 +1,3 @@
-// src/pages/CheckoutPage.js
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import {
@@ -11,18 +10,26 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Card,
+  CardContent,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { CartContext } from '../context/cartContext';
 
 function CheckoutPage() {
-  const { cartItems } = useContext(CartContext);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const { cartItems, clearCart } = useContext(CartContext);
   const [orderInfo, setOrderInfo] = useState({
     name: '',
     email: '',
     address: '',
   });
+  const [transactionId, setTransactionId] = useState('');
 
-  // Group cart items by product name (since no ID is available)
+  // Group cart items by product name (since no unique ID is available)
   const groupedCartItems = Object.values(
     cartItems.reduce((acc, item) => {
       const key = item.name;
@@ -35,7 +42,7 @@ function CheckoutPage() {
     }, {})
   );
 
-  // Calculate the total price using the grouped items and their quantities
+  // Calculate the total price using grouped cart items
   const totalPrice = groupedCartItems.reduce(
     (total, item) => total + Number(item.price) * item.quantity,
     0
@@ -45,21 +52,26 @@ function CheckoutPage() {
     setOrderInfo({ ...orderInfo, [e.target.name]: e.target.value });
   };
 
+  const handleTransactionChange = (e) => {
+    setTransactionId(e.target.value.trim());
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Prepare the order payload with customer info, grouped items, and the total.
     const orderData = {
       orderInfo,
       items: groupedCartItems,
       total: totalPrice,
+      transactionId,
     };
 
     try {
-      // POST the order to the backend endpoint.
-      const response = await axios.post('http://localhost:5000/api/orders', orderData);
+      const response = await axios.post('/api/orders', orderData);
       console.log('Order Submitted:', response.data);
       alert('Order received! You will be contacted shortly.');
-      // Optionally, clear the cart or reset the form here.
+      clearCart();
+      setOrderInfo({ name: '', email: '', address: '' });
+      setTransactionId('');
     } catch (error) {
       console.error('Error submitting order:', error);
       alert('There was an error submitting your order. Please try again.');
@@ -69,17 +81,17 @@ function CheckoutPage() {
   return (
     <Container
       sx={{
-        mt: 4,
+        mt: { xs: 2, md: 4 },
         mb: 4,
-        pb: '120px', // extra padding bottom to ensure content isn't hidden behind the footer
-        overflowY: 'auto',
-        maxHeight: 'calc(100vh - 80px)',
+        // Increase bottom padding to ensure the submit button isn't overlapped by the footer.
+        pb: { xs: '180px', md: '120px' },
+        // Removed maxHeight property to allow full scroll.
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom align="center">
         Checkout
       </Typography>
-      <Typography variant="body1" gutterBottom>
+      <Typography variant="body1" gutterBottom align="center">
         Please fill in your details to complete your order.
       </Typography>
 
@@ -104,6 +116,18 @@ function CheckoutPage() {
           <Typography variant="subtitle1" sx={{ mt: 2 }}>
             Total: Ksh {totalPrice.toFixed(2)}
           </Typography>
+          <Button
+            variant="outlined"
+            color="error"
+            sx={{ mt: 2 }}
+            onClick={() => {
+              if (window.confirm('Are you sure you want to cancel your current order and start fresh?')) {
+                clearCart();
+              }
+            }}
+          >
+            Clear Cart
+          </Button>
         </Box>
       ) : (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
@@ -111,6 +135,30 @@ function CheckoutPage() {
         </Typography>
       )}
 
+      {/* Payment Instructions Card */}
+      <Card sx={{ mb: 4 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Payment Instructions
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Please send your payment to <strong>Pochi la Biashara number 0768564533</strong>.
+          </Typography>
+          <Typography variant="body2" gutterBottom>
+            After payment, enter your transaction ID below to confirm your payment.
+          </Typography>
+          <TextField
+            label="Transaction ID"
+            variant="outlined"
+            value={transactionId}
+            onChange={handleTransactionChange}
+            fullWidth
+            sx={{ mt: 2 }}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Order Details Form */}
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -119,6 +167,7 @@ function CheckoutPage() {
           flexDirection: 'column',
           width: '100%',
           maxWidth: 400,
+          mx: 'auto',
         }}
       >
         <TextField
@@ -126,6 +175,7 @@ function CheckoutPage() {
           label="Name"
           name="name"
           margin="normal"
+          value={orderInfo.name}
           onChange={handleChange}
         />
         <TextField
@@ -134,6 +184,7 @@ function CheckoutPage() {
           name="email"
           type="email"
           margin="normal"
+          value={orderInfo.email}
           onChange={handleChange}
         />
         <TextField
@@ -141,6 +192,7 @@ function CheckoutPage() {
           label="Address"
           name="address"
           margin="normal"
+          value={orderInfo.address}
           onChange={handleChange}
         />
         <Button variant="contained" type="submit" sx={{ mt: 2 }}>

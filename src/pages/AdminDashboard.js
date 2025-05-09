@@ -21,27 +21,27 @@ import {
 
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
-  "admin2@example.com",
+  "sacalivinmocha@gmail.com",
   "stevecr58@gmail.com"
 ];
 
 const AdminDashboard = () => {
-  // States related to orders and filtering
+  // States related to orders and filtering.
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // States for admin login
+  // States for admin login.
   const [adminEmail, setAdminEmail] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginError, setLoginError] = useState(null);
 
-  // Wrap fetchOrders in useCallback so it's a stable dependency.
+  // Fetch orders – wrapped in useCallback so its reference stays stable.
   const fetchOrders = useCallback(async () => {
     try {
-      // Include the admin email header in the request
+      // Include the admin email header in the request.
       const res = await axios.get('http://localhost:5000/api/orders', {
         headers: { 'x-admin-email': adminEmail },
       });
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
     }
   }, [adminEmail]);
 
-  // Fetch orders when the admin is logged in.
+  // Fetch orders when admin is logged in.
   useEffect(() => {
     if (isLoggedIn) {
       fetchOrders();
@@ -70,10 +70,9 @@ const AdminDashboard = () => {
     setFilteredOrders(filtered);
   }, [searchTerm, orders]);
 
-  // Function to update the status of a specific order.
+  // Function to update the shipping status of a specific order.
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      // Include the admin email header when updating order status.
       const res = await axios.put(
         `http://localhost:5000/api/orders/${orderId}`,
         { status: newStatus },
@@ -92,13 +91,32 @@ const AdminDashboard = () => {
     }
   };
 
+  // Function to confirm payment (update paymentStatus to confirmed).
+  const confirmPayment = async (orderId) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/orders/${orderId}/confirm-payment`,
+        {},
+        { headers: { 'x-admin-email': adminEmail } }
+      );
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId ? { ...order, paymentStatus: 'confirmed' } : order
+        )
+      );
+      setSuccessMessage(`Payment for Order ${orderId} confirmed.`);
+    } catch (error) {
+      console.error('Error confirming payment:', error);
+      setErrorMessage('Failed to confirm payment for order.');
+    }
+  };
+
   // Function to handle deletion of an order.
   const handleDelete = async (orderId) => {
-    // Confirm deletion with the admin.
     if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
       try {
         await axios.delete(`http://localhost:5000/api/orders/${orderId}`, {
-          headers: { 'x-admin-email': adminEmail }
+          headers: { 'x-admin-email': adminEmail },
         });
         setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
         setSuccessMessage(`Order ${orderId} deleted successfully.`);
@@ -111,7 +129,6 @@ const AdminDashboard = () => {
 
   // Simple login handler.
   const handleLogin = () => {
-    // Convert the email to lower case to avoid case-sensitivity issues.
     if (allowedAdminEmails.includes(adminEmail.toLowerCase())) {
       setIsLoggedIn(true);
       setLoginError(null);
@@ -120,10 +137,10 @@ const AdminDashboard = () => {
     }
   };
 
-  // If not logged in, show the login form only.
+  // If not logged in, show only the login form.
   if (!isLoggedIn) {
     return (
-      <Container sx={{ mt: 4, mb: 4 }}>
+      <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" gutterBottom>
           Admin Login
         </Typography>
@@ -147,20 +164,35 @@ const AdminDashboard = () => {
     );
   }
 
-  // Render the dashboard once logged in.
+  // Render the dashboard after login.
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          gap: 2,
+          mb: { xs: 2, sm: 3 },
+        }}
+      >
         <TextField
           label="Search Orders"
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          fullWidth
+          sx={{ maxWidth: { xs: '100%', sm: '300px' } }}
         />
-        <Button variant="contained" color="primary" onClick={fetchOrders}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={fetchOrders}
+          sx={{ minWidth: '150px' }}
+        >
           Refresh Orders
         </Button>
       </Box>
@@ -171,15 +203,15 @@ const AdminDashboard = () => {
             sx={{
               border: '1px solid #ddd',
               borderRadius: 1,
-              p: 2,
+              p: { xs: 1, sm: 2 },
               mb: 2,
               boxShadow: 1,
             }}
           >
-            <Typography variant="h6">Order ID: {order._id}</Typography>
-            <Typography variant="subtitle1">
-              Customer: {order.customerName}
+            <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+              Order ID: {order._id}
             </Typography>
+            <Typography variant="subtitle1">Customer: {order.customerName}</Typography>
             <Typography variant="body1">Email: {order.email}</Typography>
             <Typography variant="body1">Address: {order.address}</Typography>
             <Typography variant="body2">
@@ -190,6 +222,12 @@ const AdminDashboard = () => {
             </Typography>
             <Typography variant="body2">
               Status: {order.status || 'pending'}
+            </Typography>
+            <Typography variant="body2">
+              Transaction ID: {order.transactionId ? order.transactionId : 'Not Provided'}
+            </Typography>
+            <Typography variant="body2">
+              Payment Status: {order.paymentStatus}
             </Typography>
             <Divider sx={{ my: 1 }} />
             <Typography variant="subtitle2">Items:</Typography>
@@ -217,7 +255,17 @@ const AdminDashboard = () => {
                 <MenuItem value="cancelled">Cancelled</MenuItem>
               </Select>
             </FormControl>
-            {/* Delete Order Button */}
+            {order.paymentStatus === 'pending' && order.transactionId && (
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => confirmPayment(order._id)}
+                >
+                  Confirm Payment
+                </Button>
+              </Box>
+            )}
             <Box sx={{ mt: 2 }}>
               <Button
                 variant="outlined"

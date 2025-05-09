@@ -9,30 +9,52 @@ function Navbar() {
   const { cartItems } = useContext(CartContext);
 
   return (
-    <AppBar position="static">
-      <Toolbar>
+    <AppBar
+      position="fixed"
+      sx={{
+        top: 0,
+        zIndex: (theme) => theme.zIndex.appBar,
+      }}
+    >
+      <Toolbar
+        sx={{
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          px: { xs: 1, sm: 3 },
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <img 
-            src={logo} 
-            alt="NK-Organics Logo" 
-            style={{ height: '40px', marginRight: '10px' }} 
+          <img
+            src={logo}
+            alt="NK-Organics Logo"
+            style={{ height: '40px', marginRight: '10px' }}
           />
           <Typography variant="h6" component="div">
             NK-Organics
           </Typography>
         </Box>
-        <Button color="inherit" component={Link} to="/">Home</Button>
-        <Button color="inherit" component={Link} to="/products">Products</Button>
-        <Button color="inherit" component={Link} to="/checkout">
-          Checkout&nbsp;
-          <Badge badgeContent={cartItems.length} color="secondary">
-            {/* A cart icon or similar can be placed here if needed */}
-          </Badge>
-        </Button>
-        {/* New Admin Login button added to allow easy admin access */}
-        <Button color="inherit" component={Link} to="/admin">
-          Admin Login
-        </Button>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Button color="inherit" component={Link} to="/">
+            Home
+          </Button>
+          <Button color="inherit" component={Link} to="/products">
+            Products
+          </Button>
+          <Button color="inherit" component={Link} to="/checkout">
+            Checkout&nbsp;
+            <Badge badgeContent={cartItems.length} color="secondary" />
+          </Button>
+          <Button color="inherit" component={Link} to="/admin">
+            Admin Login
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );
