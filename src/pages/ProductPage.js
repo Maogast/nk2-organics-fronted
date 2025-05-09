@@ -31,11 +31,17 @@ function ProductPage() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    // Using a relative URL will let the proxy (in package.json) handle routing.
+    // Use the dynamic API endpoint '/products' provided by our Express backend.
     axios
-       .get('/products.json', { signal: abortController.signal })
+      .get('/products', { signal: abortController.signal })
       .then((response) => {
-        setProducts(response.data);
+        console.log('Products response:', response.data);
+        if (Array.isArray(response.data)) {
+          setProducts(response.data);
+        } else {
+          console.error('Expected an array but received:', response.data);
+          setProducts([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -78,10 +84,10 @@ function ProductPage() {
   const normalizedCategories = products
     .map((product) => product.category ? product.category.trim() : '')
     .filter(Boolean);
-  
+
   // Use a Set to extract unique values.
   const uniqueCategories = Array.from(new Set(normalizedCategories));
-  
+
   // Include "All" at the beginning.
   const categories = ['All', ...uniqueCategories];
 
@@ -90,7 +96,7 @@ function ProductPage() {
     categoryFilter === 'All'
       ? products
       : products.filter((product) => product.category.trim() === categoryFilter);
-  
+
   const filteredProducts = filteredByCategory.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))

@@ -51,7 +51,8 @@ app.get('/', (req, res) => {
 // GET endpoint for fetching all products from the catalog.
 app.get('/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    // Fetch up to 100 products using lean() for faster query execution.
+    const products = await Product.find({}).lean().limit(100);
     res.json(products);
   } catch (err) {
     console.error(err);
