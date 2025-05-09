@@ -1,4 +1,5 @@
 // src/pages/AdminDashboard.js
+
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import {
@@ -38,15 +39,25 @@ const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginError, setLoginError] = useState(null);
 
-  // Fetch orders – wrapped in useCallback so its reference stays stable.
+  // Function to fetch orders – wrapped in useCallback so its reference stays stable.
   const fetchOrders = useCallback(async () => {
+    // Log the admin email used in the request header.
+    console.log(`Fetching orders with adminEmail: ${adminEmail}`);
+
     try {
       // Use a relative URL so that the request is routed via Vercel.
       const res = await axios.get('/api/orders', {
         headers: { 'x-admin-email': adminEmail },
       });
-      setOrders(res.data.orders);
-      setFilteredOrders(res.data.orders);
+      // Debug: Check the shape of the response.
+      console.log('Orders fetch response:', res.data);
+      if (res.data && Array.isArray(res.data.orders)) {
+        setOrders(res.data.orders);
+        setFilteredOrders(res.data.orders);
+      } else {
+        console.error('Unexpected orders format:', res.data);
+        setErrorMessage('Unexpected orders format received.');
+      }
     } catch (error) {
       console.error('Error fetching orders:', error);
       setErrorMessage('Failed to fetch orders.');
@@ -100,7 +111,6 @@ const AdminDashboard = () => {
         {},
         { headers: { 'x-admin-email': adminEmail } }
       );
-      // We don't use 'res' here so the above comment prevents ESLint from issuing a warning.
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order._id === orderId ? { ...order, paymentStatus: 'confirmed' } : order
