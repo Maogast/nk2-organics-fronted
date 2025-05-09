@@ -14,6 +14,7 @@
     "routes": [
       { "src": "/products.json", "dest": "/products.json" },
       { "src": "/manifest.json", "dest": "/manifest.json" },
+      { "src": "/images/(.*)", "dest": "/images/$1" },
       { "src": "/api/data/(.*)", "dest": "/api/data/$1" },
       { "src": "/api/(.*)", "dest": "api/index.js" },
       { "src": "/static/(.*)", "dest": "/static/$1" },
