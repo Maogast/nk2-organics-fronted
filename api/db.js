@@ -1,3 +1,4 @@
+// api/app.js
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
@@ -7,7 +8,6 @@ const connectToDatabase = require('./db');
 
 // Import models and utilities
 const Product = require('../models/Product');
-// Uncomment and use if needed later:
 // const sendOrderNotification = require('../utils/email');
 
 // Import the orders router.
@@ -18,8 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ensure a connection to MongoDB for every request.
-// The connectToDatabase() function (in db.js) will reuse an existing connection if available.
+// Use a middleware to ensure the database connection is established before each request.
 app.use(async (req, res, next) => {
   try {
     await connectToDatabase();
@@ -59,7 +58,6 @@ app.post('/products', async (req, res) => {
 });
 
 // Mount the orders router at /api/orders.
-// The router itself protects sensitive operations via adminAuth if needed.
 app.use('/api/orders', ordersRouter);
 
 module.exports = app;
