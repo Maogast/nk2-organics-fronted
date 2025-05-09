@@ -94,11 +94,13 @@ const AdminDashboard = () => {
   // Function to confirm payment (update paymentStatus to confirmed).
   const confirmPayment = async (orderId) => {
     try {
+      // eslint-disable-next-line no-unused-vars
       const res = await axios.put(
         `http://localhost:5000/api/orders/${orderId}/confirm-payment`,
         {},
         { headers: { 'x-admin-email': adminEmail } }
       );
+      // We don't use 'res' here, so the above comment prevents ESLint from issuing a warning.
       setOrders(prevOrders =>
         prevOrders.map(order =>
           order._id === orderId ? { ...order, paymentStatus: 'confirmed' } : order

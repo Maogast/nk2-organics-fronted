@@ -19,6 +19,7 @@ import { CartContext } from '../context/cartContext';
 
 function CheckoutPage() {
   const theme = useTheme();
+  // eslint-disable-next-line no-unused-vars
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { cartItems, clearCart } = useContext(CartContext);
@@ -85,7 +86,6 @@ function CheckoutPage() {
         mb: 4,
         // Increase bottom padding to ensure the submit button isn't overlapped by the footer.
         pb: { xs: '180px', md: '120px' },
-        // Removed maxHeight property to allow full scroll.
       }}
     >
       <Typography variant="h4" gutterBottom align="center">
@@ -105,7 +105,9 @@ function CheckoutPage() {
               <React.Fragment key={index}>
                 <ListItem>
                   <ListItemText
-                    primary={`${item.name}${item.quantity > 1 ? ` x${item.quantity}` : ''}`}
+                    primary={`${item.name}${
+                      item.quantity > 1 ? ` x${item.quantity}` : ''
+                    }`}
                     secondary={`Ksh ${(Number(item.price) * item.quantity).toFixed(2)}`}
                   />
                 </ListItem>
