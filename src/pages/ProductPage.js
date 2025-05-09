@@ -31,9 +31,9 @@ function ProductPage() {
   useEffect(() => {
     const abortController = new AbortController();
 
-    // Use the dynamic API endpoint '/products' provided by our Express backend.
+    // Since products.json is in the public folder, use the relative URL.
     axios
-      .get('/products', { signal: abortController.signal })
+      .get('/products.json', { signal: abortController.signal })
       .then((response) => {
         console.log('Products response:', response.data);
         if (Array.isArray(response.data)) {
@@ -82,7 +82,7 @@ function ProductPage() {
 
   // Normalize category strings (trim them) and filter out falsy values.
   const normalizedCategories = products
-    .map((product) => product.category ? product.category.trim() : '')
+    .map((product) => (product.category ? product.category.trim() : ''))
     .filter(Boolean);
 
   // Use a Set to extract unique values.
@@ -95,11 +95,14 @@ function ProductPage() {
   const filteredByCategory =
     categoryFilter === 'All'
       ? products
-      : products.filter((product) => product.category.trim() === categoryFilter);
+      : products.filter(
+          (product) => product.category.trim() === categoryFilter
+        );
 
   const filteredProducts = filteredByCategory.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    (product.description &&
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
@@ -154,13 +157,7 @@ function ProductPage() {
       <Grid container spacing={3}>
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              key={product._id || product.name}
-            >
+            <Grid item xs={12} sm={6} md={4} key={product._id || product.name}>
               <ProductCard product={product} />
             </Grid>
           ))
