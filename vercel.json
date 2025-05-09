@@ -11,17 +11,9 @@
         "config": { "distDir": "build" }
       }
     ],
-    "rewrites": [
-      {
-        "source": "/products.json",
-        "destination": "/products.json"
-      },
-      {
-        "source": "/manifest.json",
-        "destination": "/manifest.json"
-      }
-    ],
     "routes": [
+      { "src": "/products.json", "dest": "/products.json" },
+      { "src": "/manifest.json", "dest": "/manifest.json" },
       { "src": "/api/data/(.*)", "dest": "/api/data/$1" },
       { "src": "/api/(.*)", "dest": "api/index.js" },
       { "src": "/static/(.*)", "dest": "/static/$1" },
