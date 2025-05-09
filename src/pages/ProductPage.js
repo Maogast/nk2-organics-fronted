@@ -33,7 +33,7 @@ function ProductPage() {
 
     // Using a relative URL will let the proxy (in package.json) handle routing.
     axios
-      .get('/products', { signal: abortController.signal })
+      .get('/api/data/products.json', { signal: abortController.signal })
       .then((response) => {
         setProducts(response.data);
         setLoading(false);
