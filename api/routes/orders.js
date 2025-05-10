@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Order = require('../../models/Order');
-const sendOrderNotification = require('../../utils/email'); // Ensure this function returns a promise if it’s asynchronous.
+const sendOrderNotification = require('../../utils/email'); // Ensure this returns a promise if asynchronous
 
 // Inline Admin Authentication Middleware for orders.
 const allowedAdminEmails = [
@@ -37,7 +37,6 @@ router.post('/', async (req, res) => {
 
     // Fire-and-forget: send the order notification asynchronously.
     setTimeout(() => {
-      // It's a non-blocking call so that the response is sent immediately.
       sendOrderNotification(newOrder).catch((err) => {
         console.error("Error sending order notification:", err);
       });
@@ -50,10 +49,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// The remaining endpoints (GET, PUT, DELETE) remain unchanged.
+// GET endpoint to fetch all orders (protected) using .lean() for performance.
 router.get('/', adminAuth, async (req, res) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 });
+    const orders = await Order.find().lean().sort({ createdAt: -1 });
     res.json({ orders });
   } catch (err) {
     console.error("Error fetching orders:", err);

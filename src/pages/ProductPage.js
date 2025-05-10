@@ -95,9 +95,7 @@ function ProductPage() {
   const filteredByCategory =
     categoryFilter === 'All'
       ? products
-      : products.filter(
-          (product) => product.category.trim() === categoryFilter
-        );
+      : products.filter((product) => product.category.trim() === categoryFilter);
 
   const filteredProducts = filteredByCategory.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -1,18 +1,14 @@
-require('dotenv').config();
-console.log('MONGO_URI:', process.env.MONGO_URI);
+// api/app.js
 
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
 // Import the cached database connection helper
 const connectToDatabase = require('./db');
 
-// Import models and utilities
+// Import models and routers
 const Product = require('../models/Product');
-// Uncomment if needed later:
-// const sendOrderNotification = require('../utils/email');
-
-// Import the orders router.
 const ordersRouter = require('./routes/orders');
 
 const app = express();
@@ -20,26 +16,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Use a middleware to ensure the database connection is established before each request.
+// Middleware: Ensure DB connection is established before each request.
 app.use(async (req, res, next) => {
-  // Check if the required environment variable is defined.
   if (!process.env.MONGO_URI) {
     console.error("MONGO_URI environment variable not defined!");
-    if (!res.headersSent) {
-      return res.status(500).json({ error: 'Database connection URI not provided.' });
-    }
-    return;
+    return res.status(500).json({ error: 'Database connection URI not provided.' });
   }
-  
+
   try {
     await connectToDatabase();
     next();
   } catch (err) {
     console.error('Error connecting to database:', err);
-    if (!res.headersSent) {
-      return res.status(500).json({ error: 'Database connection failed.' });
-    }
-    next(err);
+    return res.status(500).json({ error: 'Database connection failed.' });
   }
 });
 
@@ -48,10 +37,10 @@ app.get('/', (req, res) => {
   res.send('NK-Organics Backend is Running');
 });
 
-// GET endpoint for fetching all products from the catalog.
+// GET endpoint for fetching products (used for manual updates; note: your frontend now loads products statically)
 app.get('/products', async (req, res) => {
   try {
-    // Fetch up to 100 products using lean() for faster query execution.
+    // Fetch up to 100 products using lean() for performance.
     const products = await Product.find({}).lean().limit(100);
     res.json(products);
   } catch (err) {
@@ -60,7 +49,7 @@ app.get('/products', async (req, res) => {
   }
 });
 
-// POST endpoint for adding a new product (for manual updates by uploading JSON data).
+// POST endpoint for adding a new product (for manual updates)
 app.post('/products', async (req, res) => {
   try {
     const newProduct = new Product(req.body);
