@@ -1,3 +1,5 @@
+// models/Order.js
+
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -21,5 +23,8 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, default: 'pending' },
   createdAt: { type: Date, default: Date.now },
 });
+
+// Create an index on the createdAt field for efficient sorting.
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Order', orderSchema);

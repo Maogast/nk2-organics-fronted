@@ -1,4 +1,5 @@
 // routes/orders.js
+
 const express = require('express');
 const router = express.Router();
 const Order = require('../../models/Order');
@@ -50,9 +51,10 @@ router.post('/', async (req, res) => {
 });
 
 // GET endpoint to fetch all orders (protected) using .lean() for performance.
+// Added .limit(50) to restrict the result set.
 router.get('/', adminAuth, async (req, res) => {
   try {
-    const orders = await Order.find().lean().sort({ createdAt: -1 });
+    const orders = await Order.find().lean().sort({ createdAt: -1 }).limit(50);
     res.json({ orders });
   } catch (err) {
     console.error("Error fetching orders:", err);
