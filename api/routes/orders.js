@@ -37,11 +37,12 @@ router.post('/', async (req, res) => {
     await newOrder.save();
 
     // Fire-and-forget: send the order notification asynchronously.
-    setTimeout(() => {
-      sendOrderNotification(newOrder).catch((err) => {
-        console.error("Error sending order notification:", err);
-      });
-    }, 0);
+    // Temporarily disable email notification to see if it speeds up the endpoint.
+    //setTimeout(() => {
+     // sendOrderNotification(newOrder).catch((err) => {
+      //  console.error("Error sending order notification:", err);
+    //  });
+   // }, 0);
 
     res.status(201).json({ success: true, order: newOrder });
   } catch (err) {
