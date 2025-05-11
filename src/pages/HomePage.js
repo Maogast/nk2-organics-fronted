@@ -1,6 +1,11 @@
 // src/pages/HomePage.js
 import React from 'react';
-import { Container, Typography, Box, Button } from '@mui/material';
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  Button 
+} from '@mui/material';
 import { Link } from 'react-router-dom';
 import ImageCarousel from '../components/ImageCarousel';
 
@@ -10,9 +15,10 @@ function HomePage() {
       sx={{
         mt: { xs: '70px', sm: '80px' }, // Extra top margin to offset the fixed navbar.
         px: { xs: 2, sm: 4 },
-        pb: { xs: '120px', sm: '140px' }  // Bottom padding reserved for the fixed footer.
+        pb: { xs: '120px', sm: '140px' }, // Bottom padding reserved for the fixed footer.
       }}
     >
+      {/* Hero Section */}
       <Box
         sx={{
           backgroundColor: 'primary.main',
@@ -46,11 +52,9 @@ function HomePage() {
           Shop Now
         </Button>
       </Box>
-      
+
       {/* Image Carousel Section */}
       <ImageCarousel />
-      
-      {/* Additional sections for featured products, testimonials, etc., can be added here */}
     </Container>
   );
 }

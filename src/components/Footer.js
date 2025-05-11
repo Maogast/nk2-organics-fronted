@@ -1,9 +1,9 @@
 // src/components/Footer.js
 import React from 'react';
-import { Box, Typography, IconButton, Link } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
-// We'll use TwitterIcon for X (formerly Twitter)
 import TwitterIcon from '@mui/icons-material/Twitter';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import YouTubeIcon from '@mui/icons-material/YouTube';
@@ -20,7 +20,7 @@ function Footer() {
         position: 'fixed',
         bottom: 0,
         width: '100%',
-        height: { xs: '70px', sm: '90px' }, // increased height to accommodate additional links
+        height: { xs: '70px', sm: '90px' },
         zIndex: 1000,
         display: 'flex',
         flexDirection: 'column',
@@ -85,7 +85,7 @@ function Footer() {
         </IconButton>
       </Box>
       
-      {/* Quick Navigation Links */}
+      {/* Quick Navigation Links using React Router's Link */}
       <Box
         sx={{
           display: 'flex',
@@ -95,38 +95,34 @@ function Footer() {
           mt: 0.5,
         }}
       >
-        <Link
-          href="/about"
-          underline="hover"
-          sx={{ color: 'white', fontSize: { xs: '0.6rem', sm: '0.7rem' } }}
+        <RouterLink
+          to="/about"
+          style={{ color: 'white', textDecoration: 'none', fontSize: '0.7rem' }}
         >
           About Us
-        </Link>
-        <Link
-          href="/contact"
-          underline="hover"
-          sx={{ color: 'white', fontSize: { xs: '0.6rem', sm: '0.7rem' } }}
+        </RouterLink>
+        <RouterLink
+          to="/contact"
+          style={{ color: 'white', textDecoration: 'none', fontSize: '0.7rem' }}
         >
           Contact
-        </Link>
-        <Link
-          href="/privacy-policy"
-          underline="hover"
-          sx={{ color: 'white', fontSize: { xs: '0.6rem', sm: '0.7rem' } }}
+        </RouterLink>
+        <RouterLink
+          to="/privacy-policy"
+          style={{ color: 'white', textDecoration: 'none', fontSize: '0.7rem' }}
         >
           Privacy Policy
-        </Link>
-        <Link
-          href="/terms"
-          underline="hover"
-          sx={{ color: 'white', fontSize: { xs: '0.6rem', sm: '0.7rem' } }}
+        </RouterLink>
+        <RouterLink
+          to="/terms"
+          style={{ color: 'white', textDecoration: 'none', fontSize: '0.7rem' }}
         >
           Terms of Service
-        </Link>
+        </RouterLink>
       </Box>
       
       {/* Copyright */}
-      <Typography variant="caption" sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, mt: 0.5 }}>
+      <Typography variant="caption" sx={{ fontSize: '0.7rem', mt: 0.5 }}>
         © {new Date().getFullYear()} NK-Organics. All rights reserved.
       </Typography>
     </Box>
