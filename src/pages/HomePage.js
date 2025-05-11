@@ -40,7 +40,7 @@ function HomePage() {
           variant="body1"
           sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }}
         >
-          Discover our range of natural herbs and spices designed to nurture your body and soul.
+          Discover our range of natural herbs, spices, essential oils, nuts, natural sweeteners, and more – all designed to nurture your body and soul.
         </Typography>
         <Button
           variant="contained"

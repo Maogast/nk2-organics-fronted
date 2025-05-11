@@ -72,11 +72,7 @@ function Navbar() {
         {/* Desktop vs Mobile Navigation */}
         {isMobile ? (
           <>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={handleOpenNavMenu}
-            >
+            <IconButton size="large" color="inherit" onClick={handleOpenNavMenu}>
               <MenuIcon />
             </IconButton>
             <Menu
@@ -101,9 +97,18 @@ function Navbar() {
                     sx={{
                       textDecoration: 'none',
                       color: 'inherit',
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                   >
                     {link.name}
+                    {link.name === 'Checkout' && (
+                      <Badge
+                        badgeContent={cartItems.length}
+                        color="secondary"
+                        sx={{ ml: 0.5 }}
+                      />
+                    )}
                   </Typography>
                 </MenuItem>
               ))}
