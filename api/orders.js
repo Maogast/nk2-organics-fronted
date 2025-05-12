@@ -1,6 +1,6 @@
 // api/orders.js
 import { createClient } from '@supabase/supabase-js';
-import sendOrderNotification from '../utils/email.js'; // Ensure the path is correct
+import sendOrderNotification from '../utils/email.js'; // Ensure this path is correct
 
 const supabaseUrl = process.env.SUPABASE_URL;       // Server-side Supabase URL
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY; // Server-side Supabase key
@@ -9,20 +9,22 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    // Submission of a new order
+    // Process new order submission
     const orderData = req.body;
     try {
-      // Insert order data into the 'orders' table
+      // Insert order data into the 'orders' table and return inserted record(s)
       const { data, error } = await supabase
         .from('orders')
         .insert(orderData)
-        .select(); // Returns the inserted order(s)
+        .select(); // Use .select() to return the newly inserted row(s)
+
       if (error) throw error;
 
-      // Send email alert with the inserted order details
+      // Log the inserted order data for debugging
+      console.log('New order inserted:', data);
+
+      // Send email notification if data is returned
       if (data && data.length > 0) {
-        // Optionally log the new order details
-        console.log('New Order Inserted:', data[0]);
         sendOrderNotification(data[0]).catch((notificationError) => {
           console.error('Error sending notification email:', notificationError);
         });
@@ -33,16 +35,18 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: error.message });
     }
   } else if (req.method === 'GET') {
-    // Fetching orders for the admin dashboard
+    // Fetch orders for the admin dashboard
     try {
       const { data, error } = await supabase
         .from('orders')
         .select();
       if (error) throw error;
+      console.log('Fetched raw orders:', data);
 
-      // Transform snake_case keys to camelCase keys expected by the dashboard.
-      const ordersCamelCase = data.map(order => ({
-        _id: order.id,  // Assuming Supabase returns `id` or you can use `order._id` if already present
+      // Safely perform transformation: note that our table columns are inserted with snake_case keys.
+      const ordersCamelCase = (data || []).map(order => ({
+        // In case Supabase uses 'id' as the primary key:
+        _id: order.id || order._id,
         customerName: order.customer_name,
         email: order.customer_email,
         address: order.customer_address,
@@ -53,6 +57,7 @@ export default async function handler(req, res) {
         items: order.order_details,
         createdAt: order.created_at,
       }));
+
       return res.status(200).json({ orders: ordersCamelCase });
     } catch (error) {
       console.error('Error fetching orders:', error);
