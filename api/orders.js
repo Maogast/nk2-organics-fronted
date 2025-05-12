@@ -8,63 +8,123 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY; // Server-side Supabase k
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    // Process new order submission
-    const orderData = req.body;
-    try {
-      // Insert order data into the 'orders' table and return inserted record(s)
-      const { data, error } = await supabase
-        .from('orders')
-        .insert(orderData)
-        .select(); // Use .select() to return the newly inserted row(s)
+  const { method, url } = req;
+  // Remove any query strings and split the URL path into segments.
+  const cleanedUrl = url.split('?')[0]; // e.g. "/api/orders/123/confirm-payment"
+  const urlParts = cleanedUrl.split('/').filter((part) => part);  // e.g. ["api", "orders", "123", "confirm-payment"]
 
-      if (error) throw error;
+  // If the endpoint is exactly /api/orders (i.e. urlParts length is 2)
+  if (urlParts.length === 2) {
+    if (method === 'GET') {
+      // Fetch orders for the admin dashboard
+      try {
+        const { data, error } = await supabase.from('orders').select();
+        if (error) throw error;
+        console.log('Fetched raw orders:', data);
 
-      // Log the inserted order data for debugging
-      console.log('New order inserted:', data);
-
-      // Send email notification if data is returned
-      if (data && data.length > 0) {
-        sendOrderNotification(data[0]).catch((notificationError) => {
-          console.error('Error sending notification email:', notificationError);
-        });
+        // Transform from snake_case to camelCase for the frontend
+        const ordersCamelCase = (data || []).map((order) => ({
+          _id: order.id || order._id,
+          customerName: order.customer_name,
+          email: order.customer_email,
+          address: order.customer_address,
+          totalPrice: order.total,
+          transactionId: order.transaction_id,
+          status: order.order_status,
+          paymentStatus: order.payment_status || 'pending',
+          items: order.order_details,
+          createdAt: order.created_at,
+        }));
+        return res.status(200).json({ orders: ordersCamelCase });
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        return res.status(500).json({ error: error.message });
       }
-      return res.status(200).json(data);
-    } catch (error) {
-      console.error('Order Insertion Error:', error);
-      return res.status(500).json({ error: error.message });
-    }
-  } else if (req.method === 'GET') {
-    // Fetch orders for the admin dashboard
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select();
-      if (error) throw error;
-      console.log('Fetched raw orders:', data);
+    } else if (method === 'POST') {
+      // Process new order submission
+      const orderData = req.body;
+      try {
+        // Insert order into Supabase and return inserted row(s)
+        const { data, error } = await supabase
+          .from('orders')
+          .insert(orderData)
+          .select();
+        if (error) throw error;
+        console.log('New order inserted:', data);
 
-      // Safely perform transformation: note that our table columns are inserted with snake_case keys.
-      const ordersCamelCase = (data || []).map(order => ({
-        // In case Supabase uses 'id' as the primary key:
-        _id: order.id || order._id,
-        customerName: order.customer_name,
-        email: order.customer_email,
-        address: order.customer_address,
-        totalPrice: order.total,
-        transactionId: order.transaction_id,
-        status: order.order_status,
-        paymentStatus: order.payment_status || 'pending',
-        items: order.order_details,
-        createdAt: order.created_at,
-      }));
-
-      return res.status(200).json({ orders: ordersCamelCase });
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      return res.status(500).json({ error: error.message });
+        // Send email notification if insertion was successful
+        if (data && data.length > 0) {
+          sendOrderNotification(data[0]).catch((notificationError) => {
+            console.error('Error sending notification email:', notificationError);
+          });
+        }
+        return res.status(200).json(data);
+      } catch (error) {
+        console.error('Order Insertion Error:', error);
+        return res.status(500).json({ error: error.message });
+      }
+    } else {
+      res.setHeader('Allow', ['GET', 'POST']);
+      return res.status(405).json({ error: `Method ${method} not allowed on /api/orders` });
     }
-  } else {
-    res.setHeader('Allow', ['POST', 'GET']);
-    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
+
+  // For endpoints that include an order ID (or extra segments)
+  if (urlParts.length >= 3) {
+    const orderId = urlParts[2];
+
+    if (method === 'PUT') {
+      // If the request is to confirm payment, URL should be /api/orders/{orderId}/confirm-payment
+      if (urlParts.length === 4 && urlParts[3] === 'confirm-payment') {
+        try {
+          const { data, error } = await supabase
+            .from('orders')
+            .update({ payment_status: 'confirmed' })
+            .eq('id', orderId);
+          if (error) throw error;
+          return res.status(200).json({ message: 'Payment confirmed', data });
+        } catch (error) {
+          console.error('Error confirming payment:', error);
+          return res.status(500).json({ error: error.message });
+        }
+      } else {
+        // Otherwise, treat it as a normal order update (update order status)
+        const { status } = req.body; // Expecting JSON like { "status": "processed" }
+        if (!status) {
+          return res.status(400).json({ error: 'Missing status in request body' });
+        }
+        try {
+          const { data, error } = await supabase
+            .from('orders')
+            .update({ order_status: status })
+            .eq('id', orderId);
+          if (error) throw error;
+          return res.status(200).json({ message: 'Order status updated', data });
+        } catch (error) {
+          console.error('Error updating order status:', error);
+          return res.status(500).json({ error: error.message });
+        }
+      }
+    } else if (method === 'DELETE') {
+      // Delete an order
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .delete()
+          .eq('id', orderId);
+        if (error) throw error;
+        return res.status(200).json({ message: 'Order deleted', data });
+      } catch (error) {
+        console.error('Error deleting order:', error);
+        return res.status(500).json({ error: error.message });
+      }
+    } else {
+      res.setHeader('Allow', ['PUT', 'DELETE']);
+      return res.status(405).json({ error: `Method ${method} not allowed on /api/orders/${orderId}` });
+    }
+  }
+
+  // If no conditions match, return a 405 Method Not Allowed response.
+  res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+  return res.status(405).json({ error: `Method ${method} not allowed` });
 }
