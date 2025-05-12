@@ -1,6 +1,6 @@
 // api/orders.js
 import { createClient } from '@supabase/supabase-js';
-import sendOrderNotification from '../utils/email.js'; // Ensure this path is correct
+import sendOrderNotification from '../src/utils/email.js'; // Ensure this path is correct
 
 const supabaseUrl = process.env.SUPABASE_URL;       // Server-side Supabase URL
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY; // Server-side Supabase key
