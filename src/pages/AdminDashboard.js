@@ -102,10 +102,13 @@ const AdminDashboard = () => {
     }
   };
 
-  // Function to confirm payment (update paymentStatus to confirmed).
+  // Function to confirm payment (update paymentStatus to confirmed) with confirmation prompt.
   const confirmPayment = async (orderId) => {
+    // Ask the admin if they're sure they've verified the payment details.
+    const isVerified = window.confirm("Have you verified that the payment is correct? Click OK to confirm payment.");
+    if (!isVerified) return; // Exit if the admin cancels the confirmation.
+
     try {
-      // eslint-disable-next-line no-unused-vars
       const res = await axios.put(
         `/api/orders/${orderId}/confirm-payment`,
         {},

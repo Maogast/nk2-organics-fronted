@@ -6,7 +6,7 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS || !process.env.ADMIN_EMA
   console.error(
     "Missing required environment variables: EMAIL_USER, EMAIL_PASS, ADMIN_EMAIL"
   );
-  // Optionally, you can exit the process here if variables are mandatory
+  // Optionally, exit the process if these are mandatory
   // process.exit(1);
 }
 
@@ -29,6 +29,8 @@ transporter.verify((error, success) => {
 });
 
 const sendOrderNotification = async (order) => {
+  console.log("sendOrderNotification called for order:", order);
+
   // Use fallbacks in case order properties differ
   const orderId = order._id || order.id || 'N/A';
   const customerName = order.customerName || order.customer_name || 'N/A';
@@ -57,8 +59,8 @@ const sendOrderNotification = async (order) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('Order notification email sent.');
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Order notification email sent successfully. Info:', info);
   } catch (err) {
     console.error('Error sending order notification email:', err);
   }

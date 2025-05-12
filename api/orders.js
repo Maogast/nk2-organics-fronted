@@ -9,11 +9,11 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function handler(req, res) {
   const { method, url } = req;
-  // Remove any query strings and split the URL path into segments.
+  // Remove any query string and split the URL path into segments.
   const cleanedUrl = url.split('?')[0]; // e.g. "/api/orders/123/confirm-payment"
   const urlParts = cleanedUrl.split('/').filter((part) => part);  // e.g. ["api", "orders", "123", "confirm-payment"]
 
-  // If the endpoint is exactly /api/orders (i.e. urlParts length is 2)
+  // If the endpoint is exactly "/api/orders" (i.e. urlParts length is 2)
   if (urlParts.length === 2) {
     if (method === 'GET') {
       // Fetch orders for the admin dashboard
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         if (error) throw error;
         console.log('Fetched raw orders:', data);
 
-        // Transform from snake_case to camelCase for the frontend
+        // Transform from snake_case to camelCase for the frontend.
         const ordersCamelCase = (data || []).map((order) => ({
           _id: order.id || order._id,
           customerName: order.customer_name,
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
       // Process new order submission
       const orderData = req.body;
       try {
-        // Insert order into Supabase and return inserted row(s)
+        // Insert order into Supabase and return the inserted row(s)
         const { data, error } = await supabase
           .from('orders')
           .insert(orderData)
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
         if (error) throw error;
         console.log('New order inserted:', data);
 
-        // Send email notification if insertion was successful
+        // Send email notification if insertion was successful.
         if (data && data.length > 0) {
           sendOrderNotification(data[0]).catch((notificationError) => {
             console.error('Error sending notification email:', notificationError);
@@ -69,12 +69,12 @@ export default async function handler(req, res) {
     }
   }
 
-  // For endpoints that include an order ID (or extra segments)
+  // For endpoints that include an order ID (or extra segments) such as /api/orders/{orderId} or /api/orders/{orderId}/confirm-payment.
   if (urlParts.length >= 3) {
     const orderId = urlParts[2];
 
     if (method === 'PUT') {
-      // If the request is to confirm payment, URL should be /api/orders/{orderId}/confirm-payment
+      // Check if the endpoint is for confirming payment.
       if (urlParts.length === 4 && urlParts[3] === 'confirm-payment') {
         try {
           const { data, error } = await supabase
@@ -88,8 +88,8 @@ export default async function handler(req, res) {
           return res.status(500).json({ error: error.message });
         }
       } else {
-        // Otherwise, treat it as a normal order update (update order status)
-        const { status } = req.body; // Expecting JSON like { "status": "processed" }
+        // Otherwise, treat it as a normal update (updating order status).
+        const { status } = req.body; // Expecting a JSON payload like { "status": "processed" }
         if (!status) {
           return res.status(400).json({ error: 'Missing status in request body' });
         }
@@ -106,7 +106,7 @@ export default async function handler(req, res) {
         }
       }
     } else if (method === 'DELETE') {
-      // Delete an order
+      // Delete an order.
       try {
         const { data, error } = await supabase
           .from('orders')
