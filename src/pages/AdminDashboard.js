@@ -109,7 +109,8 @@ const AdminDashboard = () => {
     if (!isVerified) return; // Exit if the admin cancels the confirmation.
 
     try {
-      const res = await axios.put(
+      // Await the PUT request without capturing the response, as it's not used.
+      await axios.put(
         `/api/orders/${orderId}/confirm-payment`,
         {},
         { headers: { 'x-admin-email': adminEmail } }
