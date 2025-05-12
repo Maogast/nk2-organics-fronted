@@ -1,4 +1,4 @@
-// api/seedProducts.js
+/*// api/seedProducts.js
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); // Load .env from project root
 console.log('Working directory:', process.cwd());
@@ -33,4 +33,4 @@ mongoose
   .catch((err) => {
     console.error('Error seeding products:', err);
     process.exit(1);
-  });
+  });*/

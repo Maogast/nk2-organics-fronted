@@ -1,5 +1,5 @@
+// src/pages/CheckoutPage.js
 import React, { useContext, useState } from 'react';
-import axios from 'axios';
 import {
   Container,
   Typography,
@@ -12,17 +12,18 @@ import {
   Divider,
   Card,
   CardContent,
-  useMediaQuery,
+  // useMediaQuery, // Unused for now
   useTheme,
 } from '@mui/material';
 import { CartContext } from '../context/cartContext';
+import { supabase } from '../utils/supabaseClient';
 
 function CheckoutPage() {
   const theme = useTheme();
-  // eslint-disable-next-line no-unused-vars
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
+  // Uncomment the next line when you want to apply responsive adjustments based on screen size
+  // const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const { cartItems, clearCart } = useContext(CartContext);
+
   const [orderInfo, setOrderInfo] = useState({
     name: '',
     email: '',
@@ -59,16 +60,26 @@ function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Map the order data to the schema your Supabase orders table expects.
     const orderData = {
-      orderInfo,
-      items: groupedCartItems,
+      customer_name: orderInfo.name,
+      customer_email: orderInfo.email,
+      customer_address: orderInfo.address,
+      order_details: groupedCartItems, // Storing the items as JSON
       total: totalPrice,
-      transactionId,
+      transaction_id: transactionId,
+      order_status: 'Received', // Default status
     };
 
     try {
-      const response = await axios.post('/api/orders', orderData);
-      console.log('Order Submitted:', response.data);
+      const { data, error } = await supabase
+        .from('orders')
+        .insert(orderData);
+
+      if (error) throw error;
+
+      console.log('Order Submitted:', data);
       alert('Order received! You will be contacted shortly.');
       clearCart();
       setOrderInfo({ name: '', email: '', address: '' });
@@ -84,7 +95,6 @@ function CheckoutPage() {
       sx={{
         mt: { xs: 2, md: 4 },
         mb: 4,
-        // Increase bottom padding to ensure the submit button isn't overlapped by the footer.
         pb: { xs: '180px', md: '120px' },
       }}
     >

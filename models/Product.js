@@ -1,4 +1,4 @@
-// models/Product.js
+/*// models/Product.js
 
 const mongoose = require('mongoose');
 
@@ -9,4 +9,4 @@ const ProductSchema = new mongoose.Schema({
   imageUrl: { type: String, default: 'https://via.placeholder.com/150' },
 });
 
-module.exports = mongoose.model('Product', ProductSchema);
+module.exports = mongoose.model('Product', ProductSchema);*/

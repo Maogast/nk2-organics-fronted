@@ -1,5 +1,5 @@
 // api/db.js
-const mongoose = require('mongoose');
+/*const mongoose = require('mongoose');
 
 let connectionPromise = null; // Cache the connection promise
 
@@ -30,4 +30,4 @@ async function connectToDatabase() {
   return connectionPromise;
 }
 
-module.exports = connectToDatabase;
+module.exports = connectToDatabase;*/

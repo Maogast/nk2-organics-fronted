@@ -1,6 +1,6 @@
 // api/app.js
 
-require('dotenv').config();
+/*require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -64,4 +64,4 @@ app.post('/products', async (req, res) => {
 // Mount the orders router at /api/orders.
 app.use('/api/orders', ordersRouter);
 
-module.exports = app;
+module.exports = app;*/

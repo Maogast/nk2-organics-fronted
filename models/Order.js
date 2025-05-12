@@ -1,4 +1,4 @@
-// models/Order.js
+/*// models/Order.js
 
 const mongoose = require('mongoose');
 
@@ -27,4 +27,4 @@ const orderSchema = new mongoose.Schema({
 // Create an index on the createdAt field for efficient sorting.
 orderSchema.index({ createdAt: -1 });
 
-module.exports = mongoose.model('Order', orderSchema);
+module.exports = mongoose.model('Order', orderSchema);*/
