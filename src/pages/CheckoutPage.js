@@ -13,15 +13,15 @@ import {
   Card,
   CardContent,
   // useMediaQuery, // Unused for now
-  useTheme,
+  // useTheme,    // Not needed if not using it (commented out to prevent ESLint warnings)
 } from '@mui/material';
 import { CartContext } from '../context/cartContext';
 import { supabase } from '../utils/supabaseClient';
 
 function CheckoutPage() {
-  const theme = useTheme();
-  // Uncomment the next line when you want to apply responsive adjustments based on screen size
-  // const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  // The theme is not being used, so no need to call useTheme().
+  // const theme = useTheme();
+
   const { cartItems, clearCart } = useContext(CartContext);
 
   const [orderInfo, setOrderInfo] = useState({
