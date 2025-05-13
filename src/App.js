@@ -15,11 +15,13 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 
-// Lazy loaded pages for new customer features:
-// Auth: For customer sign-up/sign-in and profile management.
-// CustomerDashboard: To allow customers to track their orders.
-const Auth = lazy(() => import('./pages/Auth'));                    
+// Lazy loaded pages for new customer features
+const Auth = lazy(() => import('./pages/Auth'));
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
+
+// Lazy loaded pages for new admin features
+const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
+const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription'));
 
 function App() {
   return (
@@ -40,19 +42,13 @@ function App() {
               <Route path="/terms" element={<TermsPage />} />
 
               {/* Customer Specific Routes */}
-              <Route path="/auth" element={<Auth />} /> 
-              {/* 
-                /auth: Customer authentication page for login / sign-up 
-                and profile management.
-              */}
-              <Route path="/dashboard" element={<CustomerDashboard />} /> 
-              {/* 
-                /dashboard: Customer order tracking dashboard where 
-                authenticated users can view their order history.
-              */}
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<CustomerDashboard />} />
 
-              {/* Admin Route */}
+              {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
             </Routes>
           </Suspense>
         </div>

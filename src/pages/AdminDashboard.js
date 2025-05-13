@@ -19,6 +19,7 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
@@ -186,6 +187,32 @@ const AdminDashboard = () => {
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
+      {/* Navigation Links for Additional Admin Features */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 2,
+          mb: { xs: 2, sm: 3 },
+        }}
+      >
+        <Button
+          variant="outlined"
+          component={Link}
+          to="/admin/analytics"
+          sx={{ minWidth: '150px' }}
+        >
+          Analytics Dashboard
+        </Button>
+        <Button
+          variant="outlined"
+          component={Link}
+          to="/admin/newsletter"
+          sx={{ minWidth: '150px' }}
+        >
+          Newsletter Management
+        </Button>
+      </Box>
       <Box
         sx={{
           display: 'flex',
