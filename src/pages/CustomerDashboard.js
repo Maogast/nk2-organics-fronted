@@ -38,7 +38,7 @@ const CustomerDashboard = () => {
   };
 
   useEffect(() => {
-    // Async function to get the current user session and then fetch orders.
+    // Asynchronously get the session and then fetch the orders for the user
     const getUserAndFetchOrders = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
@@ -60,11 +60,11 @@ const CustomerDashboard = () => {
   }, []);
 
   return (
-    <Container sx={{ mt: 4 }}>
+    // Added bottom padding (pb) to ensure the last order isn't covered by the footer.
+    <Container sx={{ mt: 4, pb: 8 }}>
       <Typography variant="h4" gutterBottom>
         Order Tracking Dashboard
       </Typography>
-      {/* Display the loading indicator while data is being fetched */}
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <CircularProgress />
