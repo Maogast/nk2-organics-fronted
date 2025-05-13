@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Box, List, ListItem, ListItemText, TextField, Button, Typography, Paper } from '@mui/material';
 
-// Initialize your Supabase client
+// Initialize your Supabase client (ideally as a singleton)
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -12,8 +12,8 @@ const ChatBot = () => {
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
 
-  // Fetch messages and subscribe for realtime updates.
   useEffect(() => {
+    // Fetch existing messages
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -25,24 +25,29 @@ const ChatBot = () => {
     };
     fetchMessages();
 
-    const subscription = supabase
-      .from('chat_messages')
-      .on('INSERT', payload => {
-        setMessages((prev) => [...prev, payload.new]);
-
-        // Simple bot logic: if the user message contains "help", the bot responds.
-        if (payload.new.sender === 'user' && payload.new.message.toLowerCase().includes('help')) {
-          setTimeout(() => {
-            supabase.from('chat_messages').insert([
-              { sender: 'bot', message: 'How can I help you today?' }
-            ]);
-          }, 1000);
+    // Subscribe to real-time messages using the new channel API
+    const channel = supabase.channel('chat_messages_channel')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'chat_messages' },
+        (payload) => {
+          setMessages((prev) => [...prev, payload.new]);
+          // Bot auto-reply logic
+          if (payload.new.sender === 'user' &&
+              payload.new.message.toLowerCase().includes('help')) {
+            setTimeout(() => {
+              supabase.from('chat_messages').insert([
+                { sender: 'bot', message: 'How can I help you today?' }
+              ]);
+            }, 1000);
+          }
         }
-      })
+      )
       .subscribe();
 
+    // Cleanup subscription on component unmount
     return () => {
-      supabase.removeSubscription(subscription);
+      supabase.removeChannel(channel);
     };
   }, []);
 
