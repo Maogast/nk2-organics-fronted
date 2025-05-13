@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import { CartProvider } from './context/cartContext';
 import AdminDashboard from './pages/AdminDashboard';
 import HomePage from './pages/HomePage'; // Loaded eagerly
+import ChatBot from './components/ChatBot'; // <-- Moved ChatBot import to the top
 
 // Lazy loaded pages for main public routes
 const ProductPage = lazy(() => import('./pages/ProductPage'));
@@ -22,9 +23,6 @@ const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
 // Lazy loaded pages for new admin features
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription'));
-
-// Lazy load ChatBot
-import ChatBot from './components/ChatBot';
 
 function App() {
   return (
@@ -61,7 +59,7 @@ function App() {
         <div
           style={{
             position: 'fixed',
-            // Calculate a bottom offset to leave space for the Footer (e.g., Footer height 90px + 20px margin)
+            // Leaves space for the Footer (Footer height 90px + 20px margin)
             bottom: 'calc(90px + 20px)',
             right: 20,
             zIndex: 1100,
