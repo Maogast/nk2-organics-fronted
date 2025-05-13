@@ -23,6 +23,9 @@ const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription'));
 
+// Lazy load ChatBot
+import ChatBot from './components/ChatBot';
+
 function App() {
   return (
     <CartProvider>
@@ -53,6 +56,19 @@ function App() {
           </Suspense>
         </div>
         <Footer />
+
+        {/* Floating ChatBot widget positioned above the footer */}
+        <div
+          style={{
+            position: 'fixed',
+            // Calculate a bottom offset to leave space for the Footer (e.g., Footer height 90px + 20px margin)
+            bottom: 'calc(90px + 20px)',
+            right: 20,
+            zIndex: 1100,
+          }}
+        >
+          <ChatBot />
+        </div>
       </Router>
     </CartProvider>
   );
