@@ -20,10 +20,8 @@ app.get('/api/customerOrders', (req, res) => {
 });
 
 // Endpoint for orders (for admin features: viewing, updating, confirming payment, deleting)
-// This routes any HTTP method with a URL starting with "/api/orders" to your orders.js handler.
-app.all('/api/orders*', (req, res) => {
-  ordersHandler(req, res);
-});
+// Using app.use ensures all requests beginning with "/api/orders" are routed to ordersHandler.
+app.use('/api/orders', ordersHandler);
 
 // Analytics endpoint to retrieve aggregated sales/orders data for admin dashboards.
 app.get('/api/analytics', (req, res) => {
