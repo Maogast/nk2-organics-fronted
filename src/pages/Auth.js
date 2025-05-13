@@ -1,5 +1,6 @@
+// src/pages/Auth.js
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 
 const Auth = () => {
@@ -9,6 +10,7 @@ const Auth = () => {
   const [message, setMessage] = useState('');
 
   const handleSignUp = async () => {
+    // Sign-up remains the same unless Supabase updates it further.
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setMessage(error.message);
@@ -18,7 +20,8 @@ const Auth = () => {
   };
 
   const handleSignIn = async () => {
-    const { error } = await supabase.auth.signIn({ email, password });
+    // Update the sign-in call to the new method
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(error.message);
     } else {

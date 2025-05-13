@@ -25,20 +25,29 @@ function Navbar() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorElNav, setAnchorElNav] = useState(null);
   
-  // State to manage user session from Supabase Auth.
+  // Use state to track the current user session
   const [session, setSession] = useState(null);
 
-  // Set up an auth listener to update the session when authentication changes.
   useEffect(() => {
-    const currentSession = supabase.auth.session();
-    setSession(currentSession);
-    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Fetch the current session using the new Supabase v2 API method
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+    };
+
+    fetchSession();
+
+    // Subscribe to auth state changes using the v2 API
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
     });
-    return () => authListener.unsubscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Function handlers to open/close the mobile nav menu.
+  // Handles for mobile navigation menu
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -47,19 +56,18 @@ function Navbar() {
     setAnchorElNav(null);
   };
 
-  // Determine which customer-specific link to show:
-  // If the user is logged in (session exists), show "Dashboard"
-  // Otherwise, show "Login"
+  // Conditionally set the customer-specific navigation link.
+  // When not logged in, show "Login"; when logged in, show "Dashboard"
   const customerLink = session
     ? { name: 'Dashboard', path: '/dashboard' }
     : { name: 'Login', path: '/auth' };
 
-  // Array of navigation links including new customer features.
+  // Array of navigation links
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
     { name: 'Checkout', path: '/checkout' },
-    customerLink, // Conditionally rendered customer auth/dashboard link.
+    customerLink, // This shows either Login or Dashboard
     { name: 'Admin Login', path: '/admin' },
   ];
 
@@ -89,7 +97,8 @@ function Navbar() {
             NK-Organics
           </Typography>
         </Box>
-        {/* Desktop vs Mobile Navigation */}
+
+        {/* Responsive Navigation */}
         {isMobile ? (
           <>
             <IconButton size="large" color="inherit" onClick={handleOpenNavMenu}>
@@ -123,7 +132,11 @@ function Navbar() {
                   >
                     {link.name}
                     {link.name === 'Checkout' && (
-                      <Badge badgeContent={cartItems.length} color="secondary" sx={{ ml: 0.5 }} />
+                      <Badge
+                        badgeContent={cartItems.length}
+                        color="secondary"
+                        sx={{ ml: 0.5 }}
+                      />
                     )}
                   </Typography>
                 </MenuItem>
@@ -131,12 +144,27 @@ function Navbar() {
             </Menu>
           </>
         ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
             {navLinks.map((link) => (
-              <Button key={link.name} color="inherit" component={Link} to={link.path}>
+              <Button
+                key={link.name}
+                color="inherit"
+                component={Link}
+                to={link.path}
+              >
                 {link.name}
                 {link.name === 'Checkout' && (
-                  <Badge badgeContent={cartItems.length} color="secondary" sx={{ ml: 0.5 }} />
+                  <Badge
+                    badgeContent={cartItems.length}
+                    color="secondary"
+                    sx={{ ml: 0.5 }}
+                  />
                 )}
               </Button>
             ))}
