@@ -4,7 +4,7 @@ import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-// List of admin email addresses
+// List of admin email addresses.
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
   "sacalivinmocha@gmail.com",
@@ -18,19 +18,17 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const { error, data: { session } } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(error.message);
     } else {
       setMessage('');
-      // Check if the user logging in is an admin.
-      if (allowedAdminEmails.includes(email.toLowerCase())) {
-        navigate('/admin-dashboard');
+      const lowerEmail = email.toLowerCase();
+      // If the email is authorized as admin, go to the admin dashboard; otherwise go to customer dashboard.
+      if (allowedAdminEmails.includes(lowerEmail)) {
+        navigate('/dashboard'); // Admin dashboard route.
       } else {
-        navigate('/dashboard');
+        navigate('/customer-dashboard'); // Customer dashboard route.
       }
     }
   };

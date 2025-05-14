@@ -1,19 +1,26 @@
 // src/pages/Auth.js
 import React, { useState } from 'react';
-// Import the updated supabase client with enhanced auth configuration.
 import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+// List of allowed admin email addresses.
+const allowedAdminEmails = [
+  "stevemagare4@gmail.com",
+  "sacalivinmocha@gmail.com",
+  "stevecr58@gmail.com"
+];
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // authMode can be either 'login' or 'signup'.
+  // authMode can be either 'login' or 'signup'
   const [authMode, setAuthMode] = useState('login');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  // Handle Sign Up using Supabase Auth.
+  // Handle sign up. Supabase sends a confirmation email.
   const handleSignUp = async () => {
-    // Supabase will send a confirmation email if needed.
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setMessage(error.message);
@@ -22,13 +29,19 @@ const Auth = () => {
     }
   };
 
-  // Handle Sign In using Supabase's recommended signInWithPassword method.
+  // Handle sign in. After a successful sign in, redirect based on email.
   const handleSignIn = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(error.message);
     } else {
       setMessage('Logged in successfully!');
+      const lowerEmail = email.toLowerCase();
+      if (allowedAdminEmails.includes(lowerEmail)) {
+        navigate('/dashboard'); // Admin dashboard route
+      } else {
+        navigate('/customer-dashboard'); // Customer dashboard route
+      }
     }
   };
 

@@ -5,7 +5,6 @@ import debounce from 'lodash.debounce';
 import {
   Container,
   Typography,
-  List,
   ListItem,
   ListItemText,
   Divider,
@@ -21,11 +20,13 @@ import {
   CardContent,
   CardActions,
   Grid,
+  List as MUIList,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
 import AdminNav from '../components/AdminNav';
 
+// Allowed admin email addresses.
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
   "sacalivinmocha@gmail.com",
@@ -52,13 +53,10 @@ const AdminDashboard = () => {
 
   const navigate = useNavigate();
 
-  // Persist admin login using localStorage.
+  // Check for persisted admin login.
   useEffect(() => {
     const storedAdminEmail = localStorage.getItem('adminEmail');
-    if (
-      storedAdminEmail &&
-      allowedAdminEmails.includes(storedAdminEmail.toLowerCase())
-    ) {
+    if (storedAdminEmail && allowedAdminEmails.includes(storedAdminEmail.toLowerCase())) {
       setAdminEmail(storedAdminEmail);
       setIsLoggedIn(true);
     }
@@ -66,55 +64,43 @@ const AdminDashboard = () => {
 
   // Function to fetch orders.
   const fetchOrders = useCallback(async () => {
-    console.log(`Fetching orders with adminEmail: ${adminEmail}`);
     try {
       const res = await axios.get('/api/orders', {
         headers: { 'x-admin-email': adminEmail },
       });
-      console.log('Orders fetch response:', res.data);
       if (res.data && Array.isArray(res.data.orders)) {
         setOrders(res.data.orders);
         setFilteredOrders(
-          res.data.orders.filter(order =>
+          res.data.orders.filter((order) =>
             order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             order._id.toLowerCase().includes(searchTerm.toLowerCase())
           )
         );
       } else {
-        console.error('Unexpected orders format:', res.data);
         setErrorMessage('Unexpected orders format received.');
       }
     } catch (error) {
-      console.error('Error fetching orders:', error);
       setErrorMessage('Failed to fetch orders.');
     }
   }, [adminEmail, searchTerm]);
 
-  // Function to fetch chat sessions from Supabase.
+  // Function to fetch chat sessions.
   const fetchChatSessions = async () => {
     try {
       const { data, error } = await supabase
         .from('chat_messages')
         .select('session_id, message, created_at, sender');
       if (error) {
-        console.error('Error fetching chat sessions:', error);
         setErrorMessage('Failed to fetch chat sessions.');
       } else if (data) {
         const sessionsMap = {};
         data.forEach((msg) => {
           if (!sessionsMap[msg.session_id]) {
-            sessionsMap[msg.session_id] = {
-              session_id: msg.session_id,
-              messages: [],
-              lastMessage: msg,
-            };
+            sessionsMap[msg.session_id] = { session_id: msg.session_id, messages: [], lastMessage: msg };
           }
           sessionsMap[msg.session_id].messages.push(msg);
-          if (
-            new Date(msg.created_at) >
-            new Date(sessionsMap[msg.session_id].lastMessage.created_at)
-          ) {
+          if (new Date(msg.created_at) > new Date(sessionsMap[msg.session_id].lastMessage.created_at)) {
             sessionsMap[msg.session_id].lastMessage = msg;
           }
         });
@@ -126,35 +112,36 @@ const AdminDashboard = () => {
         setChatSessions(sessionsArray);
       }
     } catch (err) {
-      console.error('Error in fetchChatSessions:', err);
       setErrorMessage('Failed to fetch chat sessions.');
     }
   };
 
-  // Create a debounced function using useMemo.
-  const debouncedSetSearchTerm = useMemo(() => debounce((value) => {
-    setSearchTerm(value);
-  }, 300), []);
+  // Create a debounced function for search term updates.
+  const debouncedSetSearchTerm = useMemo(
+    () =>
+      debounce((value) => {
+        setSearchTerm(value);
+      }, 300),
+    []
+  );
 
-  // Cleanup the debounced function on unmount.
   useEffect(() => {
     return () => {
       debouncedSetSearchTerm.cancel();
     };
   }, [debouncedSetSearchTerm]);
 
-  // Update filtered orders whenever searchTerm or orders change.
+  // Update filtered orders when searchTerm or orders change.
   useEffect(() => {
-    const filtered = orders.filter(
-      (order) =>
-        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order._id.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = orders.filter((order) =>
+      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order._id.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredOrders(filtered);
   }, [searchTerm, orders]);
 
-  // Fetch orders and chat sessions when admin logs in.
+  // Fetch orders and chat sessions once logged in.
   useEffect(() => {
     if (isLoggedIn) {
       fetchOrders();
@@ -165,13 +152,11 @@ const AdminDashboard = () => {
   // Function to update order status.
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      // Destructure data from the response instead of using `res` directly.
-      const { data } = await axios.put(
-        `/api/orders/${orderId}`,
-        { status: newStatus },
-        { headers: { 'x-admin-email': adminEmail } }
-      );
-      console.log('Order update response:', data);
+      await axios.put(
+  `/api/orders/${orderId}`,
+  { status: newStatus },
+  { headers: { 'x-admin-email': adminEmail } }
+);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
           order._id === orderId ? { ...order, status: newStatus } : order
@@ -179,7 +164,6 @@ const AdminDashboard = () => {
       );
       setSuccessMessage(`Order ${orderId} updated to ${newStatus}`);
     } catch (error) {
-      console.error('Error updating order status:', error);
       setErrorMessage('Failed to update order status.');
     }
   };
@@ -203,7 +187,6 @@ const AdminDashboard = () => {
       );
       setSuccessMessage(`Payment for Order ${orderId} confirmed.`);
     } catch (error) {
-      console.error('Error confirming payment:', error);
       setErrorMessage('Failed to confirm payment for order.');
     }
   };
@@ -220,13 +203,12 @@ const AdminDashboard = () => {
         setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         setSuccessMessage(`Order ${orderId} deleted successfully.`);
       } catch (error) {
-        console.error("Error deleting order:", error);
         setErrorMessage('Failed to delete order.');
       }
     }
   };
 
-  // Admin login handler (if not logged in).
+  // Admin login handler for the dashboard.
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
       email: adminEmail,
@@ -234,6 +216,8 @@ const AdminDashboard = () => {
     });
     if (error) {
       setLoginError(error.message);
+    } else if (!allowedAdminEmails.includes(adminEmail.toLowerCase())) {
+      setLoginError("Access Denied: Not an admin email.");
     } else {
       setIsLoggedIn(true);
       setLoginError(null);
@@ -249,11 +233,11 @@ const AdminDashboard = () => {
     } else {
       localStorage.removeItem('adminEmail');
       setIsLoggedIn(false);
-      navigate('/admin');
+      navigate('/admin'); // navigate to admin login route
     }
   };
 
-  // If not logged in, display the login form.
+  // If the admin is not logged in, display the login form.
   if (!isLoggedIn) {
     return (
       <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
@@ -289,6 +273,7 @@ const AdminDashboard = () => {
     );
   }
 
+  // Once logged in, display the dashboard.
   return (
     <>
       <AdminNav handleLogout={handleLogout} />
@@ -309,7 +294,12 @@ const AdminDashboard = () => {
               fullWidth
             />
           </Grid>
-          <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}
+          >
             <Button variant="contained" onClick={fetchOrders} sx={{ minWidth: '150px' }}>
               Refresh Orders
             </Button>
@@ -344,7 +334,7 @@ const AdminDashboard = () => {
                 </Typography>
                 <Divider sx={{ my: 2 }} />
                 <Typography variant="subtitle2">Items:</Typography>
-                <List>
+                <MUIList>
                   {order.items.map((item, index) => (
                     <ListItem key={index} sx={{ py: 0 }}>
                       <ListItemText
@@ -353,7 +343,7 @@ const AdminDashboard = () => {
                       />
                     </ListItem>
                   ))}
-                </List>
+                </MUIList>
                 <FormControl fullWidth sx={{ mt: 2 }}>
                   <InputLabel>Update Status</InputLabel>
                   <Select

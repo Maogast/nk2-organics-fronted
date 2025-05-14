@@ -1,0 +1,300 @@
+[33mcommit 25a11dd53391119d1fc0341f94cbfa0d123708f8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/feature/advanceChatbot[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mfeature/advanceChatbot[m[33m)[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Thu May 15 00:23:22 2025 +0300
+
+    Implement unified login for both customers and admins; update Navbar, AdminDashboard, ProductPage, and add AdminNav and Login components
+
+[33mcommit 157a118b15569deb6c57d8c932b8751c184c2c44[m[33m ([m[1;31morigin/feature/adminChatSession[m[33m, [m[1;32mfeature/adminChatSession[m[33m)[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Wed May 14 07:40:53 2025 +0300
+
+    Add admin chat session feature with Material-UI enhancements
+
+[33mcommit 12e3a20c02d6122c93bfdf0ead3966d9d866f93c[m
+Merge: c9ed171 70aacdb
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Wed May 14 00:26:55 2025 +0300
+
+    Merge branch 'feature/chartbot'
+
+[33mcommit 70aacdb98b522a1cf00cccf369adb8b36f539db0[m[33m ([m[1;31morigin/feature/chartbot[m[33m, [m[1;32mfeature/chartbot[m[33m)[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Wed May 14 00:22:45 2025 +0300
+
+    Integrate chatbot feature with updated Supabase real-time API
+
+[33mcommit c9ed171080548d6b9ceb679aa8a79cbf3d710476[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 23:57:43 2025 +0300
+
+    simply move the ChatBot import up
+
+[33mcommit 04f410f685d3a7ea93b7229776a0c3ec1c24e2aa[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 23:46:24 2025 +0300
+
+    Add floating ChatBot widget; update App.js & ChatBot component styling
+
+[33mcommit 73afee6e8899cfdbf54d98c66db3a85752597140[m[33m ([m[1;31morigin/feature/admin-analytics-newsletter[m[33m, [m[1;32mfeature/admin-analytics-newsletter[m[33m)[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 11:19:50 2025 +0300
+
+    Update API routes and admin features (analytics & newsletter) with orders handler fix
+
+[33mcommit ef77552f464cf7b26014dc673091814bec3ada0d[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 10:48:08 2025 +0300
+
+    Add admin analytics and newsletter features with updated API endpoints and AdminDashboard links
+
+[33mcommit 9904c0d734ba92ad96f3a278b3c02a9e1ba38a48[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 08:40:55 2025 +0300
+
+    Update CustomerDashboard: add bottom padding to ensure last orders are not covered by the footer
+
+[33mcommit f704440b2f6ed26d5106ae23b7a5f8a51544240a[m[33m ([m[1;31morigin/feature/customer-auth-guest-checkout[m[33m, [m[1;32mfeature/customer-auth-guest-checkout[m[33m)[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 08:28:07 2025 +0300
+
+    Finalize customer auth & guest checkout features
+
+[33mcommit bb5b8e6cc99fd4866943309889b5d4b6f35013bd[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Tue May 13 07:27:29 2025 +0300
+
+    Add customer auth & guest checkout features with appropriate routes
+
+[33mcommit d6c563b66832cf8cc81140507144286adda4e149[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 21:21:30 2025 +0300
+
+    Your commit message here
+
+[33mcommit bec911828b36877415db20b8d4223adba9233b84[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 21:04:39 2025 +0300
+
+    Delete,update,confirm etc for admins
+
+[33mcommit b6d30c396a9fd8236f447cfacba8857298ebfd09[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 20:49:18 2025 +0300
+
+    Update orders API to support updating status, confirming payment, and deleting orders
+
+[33mcommit d00c97f2de2b6bccd69a6a2afbb6ada376478e12[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 20:35:01 2025 +0300
+
+    Fix email module path; point to src/utils/email.js
+
+[33mcommit cab7763378744ff0118691a5ccd3a11e048c3b2e[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 20:22:44 2025 +0300
+
+    Update vercel.json with latest configuration changes
+
+[33mcommit cbcbf2eefa684723cfc7437873ff66f02784690f[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 20:13:51 2025 +0300
+
+    Update Nodemailer config with environment check and transporter verification
+
+[33mcommit f34ade663e205954a07e70696349132bc8ce46e6[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:58:01 2025 +0300
+
+    Remove/update api/index.js to export a default function
+
+[33mcommit 64353b0a6d44e6b624443cb6ed417dcc452ca76e[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:56:38 2025 +0300
+
+    Remove/update api/index.js to export a default function
+
+[33mcommit e2c09e750eea3ae15bbccf3e7c52e80467be78fa[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:52:38 2025 +0300
+
+    Update GET orders transformation and add logging for debugging
+
+[33mcommit 43b212b48c9c1f44da098f87db8fdcb46a9b6f79[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:44:27 2025 +0300
+
+    Update orders API to support GET with transformed data and email notifications on POST
+
+[33mcommit 927bbc92bad9a8be1350972a54a49c2f54ec3d39[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:33:03 2025 +0300
+
+    Update API to support GET requests and trigger email notifications on new orders
+
+[33mcommit dce6aa3c1a7e0c5004055d027a86ca48b02e9b6a[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 19:01:39 2025 +0300
+
+    commented out
+
+[33mcommit 629630265384ceceb88510dd36a5f2bada74cc56[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Mon May 12 18:41:56 2025 +0300
+
+    Update API and email notifications, update env variables
+
+[33mcommit 4b72e38db3420de4808f66057b1ce6b3ec576222[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sun May 11 12:22:45 2025 +0300
+
+    Updated Hero Text:
+
+[33mcommit 432eccdc2a327b8b78d5d2e3735a5e13481be7da[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sun May 11 12:08:46 2025 +0300
+
+    Mobile Version
+
+[33mcommit de2f79a90f52bd065a89c35393c9dae255373b99[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sun May 11 11:52:12 2025 +0300
+
+    frontend almost done
+
+[33mcommit 5a1e9ab5bb5cb733e167388975ac743f91b1de31[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sun May 11 01:03:54 2025 +0300
+
+    •Order Submission
+
+[33mcommit 6814e47c953a5f490e718d693b8a979a2755fd8a[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sun May 11 00:11:56 2025 +0300
+
+    smoke test
+
+[33mcommit f1bf64f47f5f0412f220ee8fb777f597a5061d96[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Sat May 10 23:41:44 2025 +0300
+
+    •Simpler, Faster Endpoints:
+
+[33mcommit 415e8cb9ffe490d01fa15e26ff8a49df86065a0c[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 17:16:14 2025 +0300
+
+    thro pain you learn in silence
+
+[33mcommit a6cbd07e00de1bb3675cf2e8fe8c080c42c5b895[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 16:51:18 2025 +0300
+
+    still press on
+
+[33mcommit 6a5540f80c0293c4b107bf9b99783b8ab0ef6e54[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 16:13:46 2025 +0300
+
+    Add vercel.json to ensure static files are served properly
+
+[33mcommit 16412ee74430859edfb9ebd91f9c9edac6d5d4e6[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 16:10:39 2025 +0300
+
+    Add vercel.json to ensure static files are served properly
+
+[33mcommit c345b6a9bbb24bb8ccd87669cc9f09eb087e85b9[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 15:56:23 2025 +0300
+
+    sweet for six days
+
+[33mcommit f4ecfeb519a76fe8472205aac96d72ac6713f519[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 15:41:19 2025 +0300
+
+    long day
+
+[33mcommit b1c25860b127ef25378184de65b316f6734284dd[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 14:43:29 2025 +0300
+
+    db.js and app.js are well configured
+
+[33mcommit 404100b77242488e7275f50a73f8237150938175[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 14:18:52 2025 +0300
+
+    Update app.js for DB connection caching and add db.js
+
+[33mcommit 1c7e52b7d4e7c78343dcf97f189f8da6373130d1[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 14:13:35 2025 +0300
+
+    Remove .env file from repository and update .gitignore
+
+[33mcommit cb033bb575dc719dcd55012510a1ae4bbbe5d057[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 13:36:56 2025 +0300
+
+    professional-website4
+
+[33mcommit 388255a1752d011543039a3addff07eecd1c9655[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 13:22:01 2025 +0300
+
+    Prepare deployment: Update API endpoints and model separating
+
+[33mcommit e3d88154b38116b6a495fcf52361fceb05206cd2[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 12:50:29 2025 +0300
+
+    professional-website3
+
+[33mcommit cf456037533b264d477cd96e77ee78bd559ff5a8[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 12:23:26 2025 +0300
+
+    Update ProductPage endpoint and Vercel routing for products
+
+[33mcommit c8e84e1ba97e06ed1a7449890e3bdb25dd805b7e[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 11:45:37 2025 +0300
+
+    Update vercel.json to properly route static assets and API endpoints
+
+[33mcommit dbdbe8232b49109dc15ee26ae99271f729641ec1[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 11:13:37 2025 +0300
+
+    professional-website1
+
+[33mcommit 2921d1f6f91ee437613f7a18c46b78d9651031d5[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 10:49:51 2025 +0300
+
+    professiona Website-1
+
+[33mcommit fd6c9fa296d6256b8b7bf6a5a260f8ac6f5f245d[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Fri May 9 10:02:12 2025 +0300
+
+    professional website
+
+[33mcommit a7c292f124abbf416b8954bcf4de70491e85c979[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Thu May 8 19:57:08 2025 +0300
+
+    backend connected with the frontend
+
+[33mcommit 3c38465ca40db52d29c849eadbbc03798c159c1f[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Thu May 8 18:33:41 2025 +0300
+
+    initial commit
+
+[33mcommit f2b4029dd90574d81121b29cb4b5f755d79e59ec[m
+Author: Stephen Magare <stevemagare4@gmail.com>
+Date:   Wed May 7 11:12:26 2025 +0300
+
+    Initialize project using Create React App
