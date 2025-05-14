@@ -1,16 +1,19 @@
 // src/pages/Auth.js
 import React, { useState } from 'react';
+// Import the updated supabase client with enhanced auth configuration.
 import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
+  // authMode can be either 'login' or 'signup'.
+  const [authMode, setAuthMode] = useState('login');
   const [message, setMessage] = useState('');
 
+  // Handle Sign Up using Supabase Auth.
   const handleSignUp = async () => {
-    // Sign-up remains the same unless Supabase updates it further.
+    // Supabase will send a confirmation email if needed.
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setMessage(error.message);
@@ -19,8 +22,8 @@ const Auth = () => {
     }
   };
 
+  // Handle Sign In using Supabase's recommended signInWithPassword method.
   const handleSignIn = async () => {
-    // Update the sign-in call to the new method
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setMessage(error.message);

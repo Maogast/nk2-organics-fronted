@@ -19,8 +19,7 @@ const CustomerDashboard = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Function to fetch orders for a given customer email.
-  // Once complete (success or error), the loading state is set to false.
+  // Function to fetch orders for the given customer email.
   const fetchOrders = async (customerEmail) => {
     try {
       const res = await axios.get('/api/customerOrders', {
@@ -38,7 +37,7 @@ const CustomerDashboard = () => {
   };
 
   useEffect(() => {
-    // Asynchronously get the session and then fetch the orders for the user
+    // Asynchronously retrieve the session and fetch the orders for the logged-in user.
     const getUserAndFetchOrders = async () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) {
@@ -47,7 +46,6 @@ const CustomerDashboard = () => {
         setLoading(false);
         return;
       }
-      
       if (session && session.user && session.user.email) {
         fetchOrders(session.user.email);
       } else {
@@ -60,7 +58,7 @@ const CustomerDashboard = () => {
   }, []);
 
   return (
-    // Added bottom padding (pb) to ensure the last order isn't covered by the footer.
+    // A Container with top margin and bottom padding ensures content isn’t overlapped by a fixed footer.
     <Container sx={{ mt: 4, pb: 8 }}>
       <Typography variant="h4" gutterBottom>
         Order Tracking Dashboard
@@ -71,7 +69,11 @@ const CustomerDashboard = () => {
         </Box>
       ) : (
         <>
-          {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+          {errorMessage && (
+            <Typography color="error" sx={{ my: 2 }}>
+              {errorMessage}
+            </Typography>
+          )}
           <List>
             {orders.map((order) => (
               <React.Fragment key={order._id}>
@@ -86,7 +88,7 @@ const CustomerDashboard = () => {
             ))}
           </List>
           {orders.length === 0 && !errorMessage && (
-            <Typography>No orders found.</Typography>
+            <Typography sx={{ mt: 2 }}>No orders found.</Typography>
           )}
         </>
       )}

@@ -1,7 +1,7 @@
 // src/pages/AdminDashboard.js
-
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import axios from 'axios';
+import debounce from 'lodash.debounce';
 import {
   Container,
   Typography,
@@ -9,7 +9,6 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Box,
   Button,
   TextField,
   Select,
@@ -23,9 +22,9 @@ import {
   CardActions,
   Grid,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
-// Import Supabase client to fetch chat session data
-import { createClient } from '@supabase/supabase-js';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/supabaseClient';
+import AdminNav from '../components/AdminNav';
 
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
@@ -33,28 +32,39 @@ const allowedAdminEmails = [
   "stevecr58@gmail.com"
 ];
 
-// Initialize Supabase client (for chat sessions)
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
 const AdminDashboard = () => {
-  // States related to orders and filtering.
+  // States for orders and search.
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // State for Chat Sessions (new feature)
+  // State for chat sessions.
   const [chatSessions, setChatSessions] = useState([]);
 
   // States for admin login.
   const [adminEmail, setAdminEmail] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginError, setLoginError] = useState(null);
 
-  // Function to fetch orders – wrapped in useCallback so its reference stays stable.
+  const navigate = useNavigate();
+
+  // Persist admin login using localStorage.
+  useEffect(() => {
+    const storedAdminEmail = localStorage.getItem('adminEmail');
+    if (
+      storedAdminEmail &&
+      allowedAdminEmails.includes(storedAdminEmail.toLowerCase())
+    ) {
+      setAdminEmail(storedAdminEmail);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // Function to fetch orders.
   const fetchOrders = useCallback(async () => {
     console.log(`Fetching orders with adminEmail: ${adminEmail}`);
     try {
@@ -64,7 +74,13 @@ const AdminDashboard = () => {
       console.log('Orders fetch response:', res.data);
       if (res.data && Array.isArray(res.data.orders)) {
         setOrders(res.data.orders);
-        setFilteredOrders(res.data.orders);
+        setFilteredOrders(
+          res.data.orders.filter(order =>
+            order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order._id.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        );
       } else {
         console.error('Unexpected orders format:', res.data);
         setErrorMessage('Unexpected orders format received.');
@@ -73,13 +89,11 @@ const AdminDashboard = () => {
       console.error('Error fetching orders:', error);
       setErrorMessage('Failed to fetch orders.');
     }
-  }, [adminEmail]);
+  }, [adminEmail, searchTerm]);
 
-  // Function to fetch chat sessions from your Supabase chat_messages table.
-  // Assumes that each message has a "session_id" field.
+  // Function to fetch chat sessions from Supabase.
   const fetchChatSessions = async () => {
     try {
-      // Query all chat messages and select session-related fields.
       const { data, error } = await supabase
         .from('chat_messages')
         .select('session_id, message, created_at, sender');
@@ -87,7 +101,6 @@ const AdminDashboard = () => {
         console.error('Error fetching chat sessions:', error);
         setErrorMessage('Failed to fetch chat sessions.');
       } else if (data) {
-        // Group messages by session_id and determine the latest message.
         const sessionsMap = {};
         data.forEach((msg) => {
           if (!sessionsMap[msg.session_id]) {
@@ -98,14 +111,17 @@ const AdminDashboard = () => {
             };
           }
           sessionsMap[msg.session_id].messages.push(msg);
-          if (new Date(msg.created_at) > new Date(sessionsMap[msg.session_id].lastMessage.created_at)) {
+          if (
+            new Date(msg.created_at) >
+            new Date(sessionsMap[msg.session_id].lastMessage.created_at)
+          ) {
             sessionsMap[msg.session_id].lastMessage = msg;
           }
         });
-        // Convert grouped sessions to an array and sort by latest message date.
         const sessionsArray = Object.values(sessionsMap);
         sessionsArray.sort(
-          (a, b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
+          (a, b) =>
+            new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
         );
         setChatSessions(sessionsArray);
       }
@@ -115,36 +131,49 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch orders when admin is logged in.
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchOrders();
-      // Also fetch chat session data once logged in.
-      fetchChatSessions();
-    }
-  }, [isLoggedIn, fetchOrders]);
+  // Create a debounced function using useMemo.
+  const debouncedSetSearchTerm = useMemo(() => debounce((value) => {
+    setSearchTerm(value);
+  }, 300), []);
 
-  // Update filtered orders when orders or search term changes.
+  // Cleanup the debounced function on unmount.
   useEffect(() => {
-    const filtered = orders.filter(order =>
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order._id.toLowerCase().includes(searchTerm.toLowerCase())
+    return () => {
+      debouncedSetSearchTerm.cancel();
+    };
+  }, [debouncedSetSearchTerm]);
+
+  // Update filtered orders whenever searchTerm or orders change.
+  useEffect(() => {
+    const filtered = orders.filter(
+      (order) =>
+        order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order._id.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredOrders(filtered);
   }, [searchTerm, orders]);
 
-  // Function to update the shipping status of a specific order.
+  // Fetch orders and chat sessions when admin logs in.
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchOrders();
+      fetchChatSessions();
+    }
+  }, [isLoggedIn, fetchOrders]);
+
+  // Function to update order status.
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await axios.put(
+      // Destructure data from the response instead of using `res` directly.
+      const { data } = await axios.put(
         `/api/orders/${orderId}`,
         { status: newStatus },
         { headers: { 'x-admin-email': adminEmail } }
       );
-      console.log('Order update response:', res.data);
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
+      console.log('Order update response:', data);
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
           order._id === orderId ? { ...order, status: newStatus } : order
         )
       );
@@ -155,9 +184,11 @@ const AdminDashboard = () => {
     }
   };
 
-  // Function to confirm payment (update paymentStatus to confirmed) with confirmation prompt.
+  // Function to confirm payment.
   const confirmPayment = async (orderId) => {
-    const isVerified = window.confirm("Have you verified that the payment is correct? Click OK to confirm payment.");
+    const isVerified = window.confirm(
+      "Have you verified that the payment is correct? Click OK to confirm payment."
+    );
     if (!isVerified) return;
     try {
       await axios.put(
@@ -165,8 +196,8 @@ const AdminDashboard = () => {
         {},
         { headers: { 'x-admin-email': adminEmail } }
       );
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
           order._id === orderId ? { ...order, paymentStatus: 'confirmed' } : order
         )
       );
@@ -177,14 +208,16 @@ const AdminDashboard = () => {
     }
   };
 
-  // Function to handle deletion of an order.
+  // Function to handle order deletion.
   const handleDelete = async (orderId) => {
-    if (window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) {
+    if (
+      window.confirm("Are you sure you want to delete this order? This action cannot be undone.")
+    ) {
       try {
         await axios.delete(`/api/orders/${orderId}`, {
           headers: { 'x-admin-email': adminEmail },
         });
-        setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+        setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
         setSuccessMessage(`Order ${orderId} deleted successfully.`);
       } catch (error) {
         console.error("Error deleting order:", error);
@@ -193,17 +226,34 @@ const AdminDashboard = () => {
     }
   };
 
-  // Simple login handler.
-  const handleLogin = () => {
-    if (allowedAdminEmails.includes(adminEmail.toLowerCase())) {
+  // Admin login handler (if not logged in).
+  const handleLogin = async () => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: adminEmail,
+      password: adminPassword,
+    });
+    if (error) {
+      setLoginError(error.message);
+    } else {
       setIsLoggedIn(true);
       setLoginError(null);
-    } else {
-      setLoginError('Unauthorized email. Access denied.');
+      localStorage.setItem('adminEmail', adminEmail);
     }
   };
 
-  // If not logged in, show only the login form.
+  // Logout handler.
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setErrorMessage(error.message);
+    } else {
+      localStorage.removeItem('adminEmail');
+      setIsLoggedIn(false);
+      navigate('/admin');
+    }
+  };
+
+  // If not logged in, display the login form.
   if (!isLoggedIn) {
     return (
       <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
@@ -215,6 +265,15 @@ const AdminDashboard = () => {
           variant="outlined"
           value={adminEmail}
           onChange={(e) => setAdminEmail(e.target.value)}
+          fullWidth
+          sx={{ mb: 2 }}
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          type="password"
+          value={adminPassword}
+          onChange={(e) => setAdminPassword(e.target.value)}
           fullWidth
           sx={{ mb: 2 }}
         />
@@ -230,186 +289,161 @@ const AdminDashboard = () => {
     );
   }
 
-  // Render the dashboard after login.
   return (
-    <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
-      <Typography variant="h4" gutterBottom>
-        Admin Dashboard
-      </Typography>
-
-      {/* Navigation Links for Additional Admin Features */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 2,
-          mb: { xs: 2, sm: 3 },
-        }}
-      >
-        <Button variant="outlined" component={Link} to="/admin/analytics" sx={{ minWidth: '150px' }}>
-          Analytics Dashboard
-        </Button>
-        <Button variant="outlined" component={Link} to="/admin/newsletter" sx={{ minWidth: '150px' }}>
-          Newsletter Management
-        </Button>
-        {/* New Navigation Link for Admin Chat Sessions */}
-        <Button variant="outlined" component={Link} to="/admin/chat-sessions" sx={{ minWidth: '150px' }}>
-          Chat Sessions
-        </Button>
-      </Box>
-
-      {/* Search bar and Refresh Orders Button */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Search Orders"
-            variant="outlined"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            fullWidth
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} display="flex" alignItems="center" justifyContent="flex-end">
-          <Button variant="contained" onClick={fetchOrders} sx={{ minWidth: '150px' }}>
-            Refresh Orders
-          </Button>
-        </Grid>
-      </Grid>
-
-      {/* Orders Section - Order Cards */}
-      {filteredOrders.length > 0 ? (
-        filteredOrders.map((order) => (
-          <Card key={order._id} sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Order ID: {order._id}
-              </Typography>
-              <Typography variant="subtitle1">
-                Customer: {order.customerName}
-              </Typography>
-              <Typography variant="body1">
-                Email: {order.email}
-              </Typography>
-              <Typography variant="body1">
-                Address: {order.address}
-              </Typography>
-              <Typography variant="body2">
-                Total: Ksh {Number(order.totalPrice).toFixed(2)}
-              </Typography>
-              <Typography variant="body2">
-                Placed on: {new Date(order.createdAt).toLocaleString()}
-              </Typography>
-              <Typography variant="body2">
-                Status: {order.status || 'pending'}
-              </Typography>
-              <Typography variant="body2">
-                Transaction ID: {order.transactionId ? order.transactionId : 'Not Provided'}
-              </Typography>
-              <Typography variant="body2">
-                Payment Status: {order.paymentStatus}
-              </Typography>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle2">
-                Items:
-              </Typography>
-              <List>
-                {order.items.map((item, index) => (
-                  <ListItem key={index} sx={{ py: 0 }}>
-                    <ListItemText
-                      primary={`${item.name} x${item.quantity}`}
-                      secondary={`Ksh ${(item.price * item.quantity).toFixed(2)}`}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-              <FormControl fullWidth sx={{ mt: 2 }}>
-                <InputLabel>Update Status</InputLabel>
-                <Select
-                  label="Update Status"
-                  defaultValue={order.status || 'pending'}
-                  onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                >
-                  <MenuItem value="pending">Pending</MenuItem>
-                  <MenuItem value="processed">Processed</MenuItem>
-                  <MenuItem value="shipped">Shipped</MenuItem>
-                  <MenuItem value="delivered">Delivered</MenuItem>
-                  <MenuItem value="cancelled">Cancelled</MenuItem>
-                </Select>
-              </FormControl>
-            </CardContent>
-            <CardActions sx={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-              {order.paymentStatus === 'pending' && order.transactionId && (
-                <Button variant="contained" color="success" onClick={() => confirmPayment(order._id)}>
-                  Confirm Payment
-                </Button>
-              )}
-              <Button variant="outlined" color="error" onClick={() => handleDelete(order._id)}>
-                Delete Order
-              </Button>
-            </CardActions>
-          </Card>
-        ))
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          No orders to display.
+    <>
+      <AdminNav handleLogout={handleLogout} />
+      <Container sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 } }}>
+        <Typography variant="h4" gutterBottom>
+          Orders Dashboard
         </Typography>
-      )}
-
-      {/* Chat Sessions Section - New Feature */}
-      <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
-        Chat Sessions
-      </Typography>
-      {chatSessions.length > 0 ? (
-        <Grid container spacing={2}>
-          {chatSessions.map((session) => (
-            <Grid item xs={12} sm={6} md={4} key={session.session_id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Session ID: {session.session_id}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Last Message by {session.lastMessage.sender}: {session.lastMessage.message}
-                  </Typography>
-                  <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    {new Date(session.lastMessage.created_at).toLocaleString()}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  {/* Link to detailed view of this chat session */}
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    component={Link}
-                    to={`/admin/chat/${session.session_id}`}
+        <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Search Orders"
+              variant="outlined"
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value);
+                debouncedSetSearchTerm(e.target.value);
+              }}
+              fullWidth
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+            <Button variant="contained" onClick={fetchOrders} sx={{ minWidth: '150px' }}>
+              Refresh Orders
+            </Button>
+          </Grid>
+        </Grid>
+        {filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => (
+            <Card key={order._id} sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                  Order ID: {order._id}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Customer: {order.customerName}
+                </Typography>
+                <Typography variant="body1">Email: {order.email}</Typography>
+                <Typography variant="body1">Address: {order.address}</Typography>
+                <Typography variant="body2">
+                  Total: Ksh {Number(order.totalPrice).toFixed(2)}
+                </Typography>
+                <Typography variant="body2">
+                  Placed on: {new Date(order.createdAt).toLocaleString()}
+                </Typography>
+                <Typography variant="body2">
+                  Status: {order.status || 'pending'}
+                </Typography>
+                <Typography variant="body2">
+                  Transaction ID: {order.transactionId ? order.transactionId : 'Not Provided'}
+                </Typography>
+                <Typography variant="body2">
+                  Payment Status: {order.paymentStatus}
+                </Typography>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="subtitle2">Items:</Typography>
+                <List>
+                  {order.items.map((item, index) => (
+                    <ListItem key={index} sx={{ py: 0 }}>
+                      <ListItemText
+                        primary={`${item.name} x${item.quantity}`}
+                        secondary={`Ksh ${(item.price * item.quantity).toFixed(2)}`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+                <FormControl fullWidth sx={{ mt: 2 }}>
+                  <InputLabel>Update Status</InputLabel>
+                  <Select
+                    label="Update Status"
+                    defaultValue={order.status || 'pending'}
+                    onChange={(e) => updateOrderStatus(order._id, e.target.value)}
                   >
-                    View Chat
+                    <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="processed">Processed</MenuItem>
+                    <MenuItem value="shipped">Shipped</MenuItem>
+                    <MenuItem value="delivered">Delivered</MenuItem>
+                    <MenuItem value="cancelled">Cancelled</MenuItem>
+                  </Select>
+                </FormControl>
+              </CardContent>
+              <CardActions sx={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                {order.paymentStatus === 'pending' && order.transactionId && (
+                  <Button variant="contained" color="success" onClick={() => confirmPayment(order._id)}>
+                    Confirm Payment
                   </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          No chat sessions available.
+                )}
+                <Button variant="outlined" color="error" onClick={() => handleDelete(order._id)}>
+                  Delete Order
+                </Button>
+              </CardActions>
+            </Card>
+          ))
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            No orders to display.
+          </Typography>
+        )}
+        <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+          Chat Sessions
         </Typography>
-      )}
-
-      {/* Snackbar for error messages */}
-      <Snackbar open={!!errorMessage} autoHideDuration={6000} onClose={() => setErrorMessage(null)}>
-        <Alert severity="error" onClose={() => setErrorMessage(null)}>
-          {errorMessage}
-        </Alert>
-      </Snackbar>
-
-      {/* Snackbar for success messages */}
-      <Snackbar open={!!successMessage} autoHideDuration={6000} onClose={() => setSuccessMessage(null)}>
-        <Alert severity="success" onClose={() => setSuccessMessage(null)}>
-          {successMessage}
-        </Alert>
-      </Snackbar>
-    </Container>
+        {chatSessions.length > 0 ? (
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            {chatSessions.map((session) => (
+              <Grid item xs={12} sm={6} md={4} key={session.session_id}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="subtitle1" gutterBottom>
+                      Session ID: {session.session_id}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Last Message by {session.lastMessage.sender}: {session.lastMessage.message}
+                    </Typography>
+                    <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+                      {new Date(session.lastMessage.created_at).toLocaleString()}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      component={Link}
+                      to={`/admin/chat/${session.session_id}`}
+                    >
+                      View Chat
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            No chat sessions available.
+          </Typography>
+        )}
+        <Snackbar
+          open={!!errorMessage}
+          autoHideDuration={6000}
+          onClose={() => setErrorMessage(null)}
+        >
+          <Alert severity="error" onClose={() => setErrorMessage(null)}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={!!successMessage}
+          autoHideDuration={6000}
+          onClose={() => setSuccessMessage(null)}
+        >
+          <Alert severity="success" onClose={() => setSuccessMessage(null)}>
+            {successMessage}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 // src/components/ChatBot.jsx
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { supabase } from '../utils/supabaseClient';
 import {
   Box,
   List,
@@ -16,17 +17,12 @@ import {
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-// Initialize your Supabase client (ideally as a singleton)
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// Helper function to retrieve or generate a session id
+// Helper function to retrieve or generate a session ID for visitors.
 const getSessionId = () => {
   const sessionKey = 'chat_session_id';
   let sessionId = localStorage.getItem(sessionKey);
   if (!sessionId) {
-    // You can use a more robust generation method such as uuid if preferred.
+    // In production, consider using a more robust method (e.g., uuid).
     sessionId = Math.random().toString(36).substr(2, 9);
     localStorage.setItem(sessionKey, sessionId);
   }
@@ -34,22 +30,23 @@ const getSessionId = () => {
 };
 
 /*
-  The ChatBot component now accepts two optional props:
-  - isAdmin: boolean indicating if the component is used by the admin interface.
-  - selectedSessionId: for admin usage, the session being viewed.
-  
-  For visitors, the sessionId is generated/retrieved via local storage.
-  For admins, you can pass the desired session id as selectedSessionId.
+  ChatBot props:
+    - isAdmin: if true, adjusts UI for admin use (e.g., labeling and styling).
+    - selectedSessionId: for admins, the session ID to interact with.
+  For visitors, the session ID is generated/retrieved from localStorage.
 */
 const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
-  // Use the passed session id for admin if provided; otherwise, use visitor's session.
+  // Use provided session ID (for admin) or a visitor-generated session.
   const sessionId = isAdmin && selectedSessionId ? selectedSessionId : getSessionId();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
-  const [openChat, setOpenChat] = useState(false);
+  // For admin, open chat by default; for visitors, allow toggling.
+  const [openChat, setOpenChat] = useState(isAdmin ? true : false);
+  // Ref for auto-scrolling.
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Fetch messages only for the given session.
+    // Fetch existing messages for the session.
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -65,7 +62,6 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     fetchMessages();
 
     // Subscribe to realtime messages for this session.
-    // Note: we're filtering with the sessionId.
     const channel = supabase
       .channel(`chat_messages_channel_${sessionId}`)
       .on(
@@ -82,12 +78,20 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
       )
       .subscribe();
 
+    // Cleanup subscription on unmount.
     return () => {
       supabase.removeChannel(channel);
     };
   }, [sessionId]);
 
-  // Function to send a new message. It includes the session_id field.
+  // Scroll to bottom when messages update.
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  // Function to send a message.
   const handleSend = async () => {
     if (newMsg.trim() === '') return;
     const sender = isAdmin ? 'admin' : 'user';
@@ -101,19 +105,29 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     }
   };
 
-  return (
-    <Paper
-      elevation={3}
-      sx={{
+  // Conditional styles.
+  // In admin mode, remove fixed positioning and add extra margin so it won't be overlapped by the footer.
+  const paperStyles = isAdmin
+    ? {
+        width: '100%',
+        maxWidth: 600,
+        p: 2,
+        mx: 'auto',
+        my: 2,
+        mb: 12, // Adjust this margin value to avoid footer overlap.
+      }
+    : {
         width: { xs: '90%', sm: 300 },
         maxHeight: '80vh',
         position: 'fixed',
         bottom: 16,
         right: 16,
         zIndex: 1000,
-      }}
-    >
-      {/* Chat Header with toggle button */}
+      };
+
+  return (
+    <Paper elevation={3} sx={paperStyles}>
+      {/* Chat Header */}
       <Box
         sx={{
           p: 2,
@@ -127,7 +141,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         }}
       >
         <Typography variant="h6">
-          {isAdmin ? 'Chat with Visitor' : 'Chat with Admin'}
+          {isAdmin ? 'Chat with Visitor' : 'Chat with Us'}
         </Typography>
         <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: '#fff' }}>
           {openChat ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -137,7 +151,6 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         <Box
           sx={{
             p: 2,
-            flex: 1,
             display: 'flex',
             flexDirection: 'column',
             maxHeight: '60vh',
@@ -160,6 +173,8 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
                 />
               </ListItem>
             ))}
+            {/* Dummy element to assist auto-scroll */}
+            <div ref={messagesEndRef} />
           </List>
         </Box>
         <Box sx={{ p: 2, display: 'flex', gap: 1 }}>

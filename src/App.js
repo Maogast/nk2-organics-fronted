@@ -4,8 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { CartProvider } from './context/cartContext';
-import AdminDashboard from './pages/AdminDashboard';
-import HomePage from './pages/HomePage'; // Loaded eagerly
+import HomePage from './pages/HomePage'; // Eagerly loaded
 import ChatBot from './components/ChatBot'; // ChatBot widget
 
 // Lazy loaded pages for main public routes
@@ -17,10 +16,11 @@ const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 // Lazy loaded pages for new customer features
-const Auth = lazy(() => import('./pages/Auth'));
+const Auth = lazy(() => import('./pages/Auth')); // Unified login for customers & admins
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
 
 // Lazy loaded pages for new admin features
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription'));
 
@@ -33,7 +33,7 @@ function App() {
     <CartProvider>
       <Router>
         <Navbar />
-        {/* Main content wrapper with padding to offset the fixed header */}
+        {/* Main content wrapper with top padding to offset the fixed header */}
         <div style={{ paddingTop: '90px', minHeight: 'calc(100vh - 90px)' }}>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
@@ -46,27 +46,19 @@ function App() {
               <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
               <Route path="/terms" element={<TermsPage />} />
 
+              {/* Unified Login Page */}
+              <Route path="/login" element={<Auth />} />
+
               {/* Customer Specific Routes */}
-              <Route path="/auth" element={<Auth />} />
               <Route path="/dashboard" element={<CustomerDashboard />} />
 
               {/* Admin Routes */}
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
 
-              {/* New Admin Chat Routes */}
-              {/* 
-                  Route to view a list of all chat sessions.
-                  This will display an overview of chat sessions (each representing a dedicated conversation with a visitor).
-              */}
+              {/* Admin Chat Routes */}
               <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
-              
-              {/* 
-                  Detailed chat view for a specific session.
-                  The session ID is passed as a URL parameter.
-                  This allows the admin to view and respond to a dedicated visitor chat.
-              */}
               <Route path="/admin/chat/:sessionId" element={<AdminChatDetail />} />
             </Routes>
           </Suspense>
@@ -77,8 +69,7 @@ function App() {
         <div
           style={{
             position: 'fixed',
-            // Leaves space for the Footer (Footer height 90px + 20px margin)
-            bottom: 'calc(90px + 20px)',
+            bottom: 'calc(90px + 20px)', // leaves space for Footer
             right: 20,
             zIndex: 1100,
           }}

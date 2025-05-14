@@ -24,12 +24,12 @@ function Navbar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorElNav, setAnchorElNav] = useState(null);
-  
-  // Use state to track the current user session
+
+  // Use state to track the current user session.
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    // Fetch the current session using the new Supabase v2 API method
+    // Fetch the current session using Supabase's v2 API method.
     const fetchSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
@@ -37,7 +37,7 @@ function Navbar() {
 
     fetchSession();
 
-    // Subscribe to auth state changes using the v2 API
+    // Subscribe to auth state changes using the v2 API.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
     });
@@ -47,7 +47,7 @@ function Navbar() {
     };
   }, []);
 
-  // Handles for mobile navigation menu
+  // Handles for mobile navigation menu.
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -57,18 +57,18 @@ function Navbar() {
   };
 
   // Conditionally set the customer-specific navigation link.
-  // When not logged in, show "Login"; when logged in, show "Dashboard"
+  // When not logged in, show "Login" (which navigates to /login); when logged in, show "Dashboard".
   const customerLink = session
     ? { name: 'Dashboard', path: '/dashboard' }
-    : { name: 'Login', path: '/auth' };
+    : { name: 'Login', path: '/login' };
 
-  // Array of navigation links
+  // Array of navigation links.
+  // Removed the "Admin Login" link in favor of unified login.
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
     { name: 'Checkout', path: '/checkout' },
-    customerLink, // This shows either Login or Dashboard
-    { name: 'Admin Login', path: '/admin' },
+    customerLink, // Shows either "Login" or "Dashboard"
   ];
 
   return (
@@ -144,27 +144,12 @@ function Navbar() {
             </Menu>
           </>
         ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {navLinks.map((link) => (
-              <Button
-                key={link.name}
-                color="inherit"
-                component={Link}
-                to={link.path}
-              >
+              <Button key={link.name} color="inherit" component={Link} to={link.path}>
                 {link.name}
                 {link.name === 'Checkout' && (
-                  <Badge
-                    badgeContent={cartItems.length}
-                    color="secondary"
-                    sx={{ ml: 0.5 }}
-                  />
+                  <Badge badgeContent={cartItems.length} color="secondary" sx={{ ml: 0.5 }} />
                 )}
               </Button>
             ))}

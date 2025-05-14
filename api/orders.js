@@ -8,20 +8,37 @@ const supabaseAnonKey = process.env.SUPABASE_ANON_KEY; // Server-side Supabase k
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default async function handler(req, res) {
-  const { method, url } = req;
-  // Remove any query string and split the URL path into segments.
-  const cleanedUrl = url.split('?')[0]; // e.g. "/api/orders/123/confirm-payment"
-  const urlParts = cleanedUrl.split('/').filter((part) => part);  // e.g. ["api", "orders", "123", "confirm-payment"]
+  const { method } = req;
+  // Remove any query string.
+  const cleanedUrl = req.url.split('?')[0]; // e.g. "/api/orders/123/confirm-payment" or "/orders/123/confirm-payment"
+  // Split the URL path into segments.
+  let urlParts = cleanedUrl.split('/').filter((part) => part);
 
-  // If the endpoint is exactly "/api/orders" (i.e. urlParts length is 2)
-  if (urlParts.length === 2) {
+  // Normalize URL parts: if the first element is "api" or "orders", remove it.
+  if (urlParts[0] === 'api' || urlParts[0] === 'orders') {
+    urlParts.shift();
+  }
+
+  // For requests to the base route (i.e., /api/orders)
+  if (urlParts.length === 0) {
     if (method === 'GET') {
-      // Fetch orders for the admin dashboard
       try {
-        const { data, error } = await supabase.from('orders').select();
+        // Use query parameters for pagination if provided.
+        // By default, fetch 50 records starting from offset 0.
+        const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
+        const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
+  
+        // Select only the needed fields.
+        const selectFields = 'id, customer_name, customer_email, customer_address, total, transaction_id, order_status, payment_status, order_details, created_at';
+  
+        const query = supabase
+          .from('orders')
+          .select(selectFields)
+          .range(offset, offset + limit - 1);
+  
+        const { data, error } = await query;
         if (error) throw error;
-        console.log('Fetched raw orders:', data);
-
+  
         // Transform from snake_case to camelCase for the frontend.
         const ordersCamelCase = (data || []).map((order) => ({
           _id: order.id || order._id,
@@ -35,29 +52,29 @@ export default async function handler(req, res) {
           items: order.order_details,
           createdAt: order.created_at,
         }));
+  
         return res.status(200).json({ orders: ordersCamelCase });
       } catch (error) {
         console.error('Error fetching orders:', error);
         return res.status(500).json({ error: error.message });
       }
     } else if (method === 'POST') {
-      // Process new order submission
+      // Process new order submission.
       const orderData = req.body;
       try {
-        // Insert order into Supabase and return the inserted row(s)
         const { data, error } = await supabase
           .from('orders')
           .insert(orderData)
           .select();
         if (error) throw error;
         console.log('New order inserted:', data);
-
-        // Send email notification if insertion was successful.
+  
         if (data && data.length > 0) {
           sendOrderNotification(data[0]).catch((notificationError) => {
             console.error('Error sending notification email:', notificationError);
           });
         }
+  
         return res.status(200).json(data);
       } catch (error) {
         console.error('Order Insertion Error:', error);
@@ -68,14 +85,14 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: `Method ${method} not allowed on /api/orders` });
     }
   }
-
-  // For endpoints that include an order ID (or extra segments) such as /api/orders/{orderId} or /api/orders/{orderId}/confirm-payment.
-  if (urlParts.length >= 3) {
-    const orderId = urlParts[2];
-
+  
+  // For endpoints with an order ID (such as /api/orders/:orderId or /api/orders/:orderId/confirm-payment)
+  if (urlParts.length >= 1) {
+    const orderId = urlParts[0];
+  
     if (method === 'PUT') {
-      // Check if the endpoint is for confirming payment.
-      if (urlParts.length === 4 && urlParts[3] === 'confirm-payment') {
+      if (urlParts.length === 2 && urlParts[1] === 'confirm-payment') {
+        // Confirm payment endpoint.
         try {
           const { data, error } = await supabase
             .from('orders')
@@ -88,8 +105,8 @@ export default async function handler(req, res) {
           return res.status(500).json({ error: error.message });
         }
       } else {
-        // Otherwise, treat it as a normal update (updating order status).
-        const { status } = req.body; // Expecting a JSON payload like { "status": "processed" }
+        // Update order status endpoint.
+        const { status } = req.body;
         if (!status) {
           return res.status(400).json({ error: 'Missing status in request body' });
         }
@@ -106,7 +123,7 @@ export default async function handler(req, res) {
         }
       }
     } else if (method === 'DELETE') {
-      // Delete an order.
+      // Delete order endpoint.
       try {
         const { data, error } = await supabase
           .from('orders')
@@ -123,8 +140,8 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: `Method ${method} not allowed on /api/orders/${orderId}` });
     }
   }
-
-  // If no conditions match, return a 405 Method Not Allowed response.
+  
+  // Fallback.
   res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
   return res.status(405).json({ error: `Method ${method} not allowed` });
 }

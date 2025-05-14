@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Container,
-  Grid,
   Typography,
   CircularProgress,
   FormControl,
@@ -14,6 +13,7 @@ import {
   TextField,
   useMediaQuery,
   useTheme,
+  Grid,
 } from '@mui/material';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
@@ -151,7 +151,7 @@ function ProductPage() {
         </FormControl>
       </Box>
 
-      {/* Display Products */}
+      {/* Display Products using legacy Grid */}
       <Grid container spacing={3}>
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
