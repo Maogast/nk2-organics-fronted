@@ -4,7 +4,7 @@ import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-// List of admin email addresses.
+// List of allowed admin email addresses.
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
   "sacalivinmocha@gmail.com",
@@ -24,11 +24,11 @@ const Login = () => {
     } else {
       setMessage('');
       const lowerEmail = email.toLowerCase();
-      // If the email is authorized as admin, go to the admin dashboard; otherwise go to customer dashboard.
+      // Redirect admin users to the admin dashboard; others to the customer dashboard.
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/dashboard'); // Admin dashboard route.
+        navigate('/admin-dashboard'); // Admin dashboard route.
       } else {
-        navigate('/customer-dashboard'); // Customer dashboard route.
+        navigate('/dashboard'); // Updated: Redirect non-admin users to customer dashboard combined route at "/dashboard".
       }
     }
   };

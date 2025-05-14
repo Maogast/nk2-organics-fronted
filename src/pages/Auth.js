@@ -38,9 +38,9 @@ const Auth = () => {
       setMessage('Logged in successfully!');
       const lowerEmail = email.toLowerCase();
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/dashboard'); // Admin dashboard route
+        navigate('/admin-dashboard'); // Redirect admin users to admin dashboard.
       } else {
-        navigate('/customer-dashboard'); // Customer dashboard route
+        navigate('/dashboard'); // Updated: Redirect non-admin users to customer dashboard route "/dashboard".
       }
     }
   };
