@@ -1,5 +1,5 @@
 // src/pages/Auth.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,23 @@ const Auth = () => {
   const [authMode, setAuthMode] = useState('login');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  // Listen for auth state changes (this will catch email confirmation logins)
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && session.user) {
+        const lowerEmail = session.user.email.toLowerCase();
+        if (allowedAdminEmails.includes(lowerEmail)) {
+          navigate('/admin-dashboard');  // Send admin users to the admin dashboard.
+        } else {
+          navigate('/dashboard');        // Send non-admin users to the customer dashboard.
+        }
+      }
+    });
+    return () => {
+      authListener?.unsubscribe();
+    };
+  }, [navigate]);
 
   // Handle sign up. Supabase sends a confirmation email.
   const handleSignUp = async () => {
@@ -38,9 +55,9 @@ const Auth = () => {
       setMessage('Logged in successfully!');
       const lowerEmail = email.toLowerCase();
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/admin-dashboard'); // Redirect admin users to admin dashboard.
+        navigate('/admin-dashboard'); // Redirect admin users.
       } else {
-        navigate('/dashboard'); // Updated: Redirect non-admin users to customer dashboard route "/dashboard".
+        navigate('/dashboard');         // Redirect non-admin users.
       }
     }
   };

@@ -24,11 +24,10 @@ const Login = () => {
     } else {
       setMessage('');
       const lowerEmail = email.toLowerCase();
-      // Redirect admin users to the admin dashboard; others to the customer dashboard.
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/admin-dashboard'); // Admin dashboard route.
+        navigate('/admin-dashboard'); // Redirect admin users.
       } else {
-        navigate('/dashboard'); // Updated: Redirect non-admin users to customer dashboard combined route at "/dashboard".
+        navigate('/dashboard');         // Redirect non-admin users.
       }
     }
   };
