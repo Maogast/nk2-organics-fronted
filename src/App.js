@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 import { CartProvider } from './context/cartContext';
 import AdminDashboard from './pages/AdminDashboard';
 import HomePage from './pages/HomePage'; // Loaded eagerly
-import ChatBot from './components/ChatBot'; // <-- Moved ChatBot import to the top
+import ChatBot from './components/ChatBot'; // ChatBot widget
 
 // Lazy loaded pages for main public routes
 const ProductPage = lazy(() => import('./pages/ProductPage'));
@@ -23,6 +23,10 @@ const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard'));
 // Lazy loaded pages for new admin features
 const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
 const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription'));
+
+// Lazy loaded pages for admin chat features
+const AdminChatSessions = lazy(() => import('./pages/AdminChatSessions'));
+const AdminChatDetail = lazy(() => import('./pages/AdminChatDetail'));
 
 function App() {
   return (
@@ -50,6 +54,20 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/analytics" element={<AdminAnalytics />} />
               <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
+
+              {/* New Admin Chat Routes */}
+              {/* 
+                  Route to view a list of all chat sessions.
+                  This will display an overview of chat sessions (each representing a dedicated conversation with a visitor).
+              */}
+              <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
+              
+              {/* 
+                  Detailed chat view for a specific session.
+                  The session ID is passed as a URL parameter.
+                  This allows the admin to view and respond to a dedicated visitor chat.
+              */}
+              <Route path="/admin/chat/:sessionId" element={<AdminChatDetail />} />
             </Routes>
           </Suspense>
         </div>
