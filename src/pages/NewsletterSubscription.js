@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Snackbar, Alert, Box } from '@mui/material';
 import axios from 'axios';
+import AdminBackButton from '../components/AdminBackButton';
 
 const NewsletterSubscription = () => {
   const [email, setEmail] = useState('');
@@ -26,6 +27,7 @@ const NewsletterSubscription = () => {
 
   return (
     <Container sx={{ mt: 4 }}>
+      <AdminBackButton />
       <Typography variant="h4" gutterBottom>
         Newsletter Subscription
       </Typography>
@@ -42,20 +44,12 @@ const NewsletterSubscription = () => {
           Subscribe
         </Button>
       </Box>
-      <Snackbar
-        open={!!success}
-        autoHideDuration={6000}
-        onClose={() => setSuccess('')}
-      >
+      <Snackbar open={!!success} autoHideDuration={6000} onClose={() => setSuccess('')}>
         <Alert severity="success" onClose={() => setSuccess('')}>
           {success}
         </Alert>
       </Snackbar>
-      <Snackbar
-        open={!!error}
-        autoHideDuration={6000}
-        onClose={() => setError('')}
-      >
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
         <Alert severity="error" onClose={() => setError('')}>
           {error}
         </Alert>

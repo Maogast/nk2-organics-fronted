@@ -1,11 +1,12 @@
 // src/pages/AdminChatDetail.js
-
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import ChatBot from '../components/ChatBot';
 import { Container, Typography } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import AdminBackButton from '../components/AdminBackButton';
 
-// Define allowed admin emails.
+// Define allowed admin email addresses.
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
   "sacalivinmocha@gmail.com",
@@ -13,18 +14,19 @@ const allowedAdminEmails = [
 ];
 
 const AdminChatDetail = () => {
+  const { session, loading } = useAuth();
   const { sessionId } = useParams();
-  
-  // Retrieve logged-in admin's email from localStorage (set during login).
-  const adminEmail = localStorage.getItem('adminEmail');
 
-  // If adminEmail is not set or not in the allowed list, redirect to login.
-  if (!adminEmail || !allowedAdminEmails.includes(adminEmail.toLowerCase())) {
-    return <Navigate to="/admin" replace />;
+  if (loading) return <div>Loading...</div>;
+
+  // Check if the session exists and if the user's email is allowed.
+  if (!session || !session.user || !allowedAdminEmails.includes(session.user.email.toLowerCase())) {
+    return <Navigate to="/admin-dashboard" replace />;
   }
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
+      <AdminBackButton />
       <Typography variant="h4" gutterBottom>
         Chat with Visitor - Session: {sessionId}
       </Typography>

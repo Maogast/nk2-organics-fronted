@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import AdminBackButton from '../components/AdminBackButton';
 
 // Register chart components.
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
@@ -67,6 +68,7 @@ const AdminAnalytics = () => {
 
   return (
     <Container sx={{ mt: 4 }}>
+      <AdminBackButton />
       <Typography variant="h4" gutterBottom>
         Sales Analytics
       </Typography>

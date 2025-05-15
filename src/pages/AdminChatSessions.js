@@ -1,89 +1,107 @@
 // src/pages/AdminChatSessions.js
-
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
-// Import the single Supabase client instance.
+import { Link, Navigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
+import { useAuth } from '../context/AuthContext';
+import AdminBackButton from '../components/AdminBackButton';
+
+const allowedAdminEmails = [
+  "stevemagare4@gmail.com",
+  "sacalivinmocha@gmail.com",
+  "stevecr58@gmail.com"
+];
 
 const AdminChatSessions = () => {
+  const { session, loading } = useAuth();
   const [sessions, setSessions] = useState([]);
 
-  // Function to fetch, group, and sort chat sessions from the chat_messages table.
-  const fetchSessions = async () => {
-    const { data, error } = await supabase
-      .from('chat_messages')
-      .select('session_id, message, created_at, sender');
-    if (error) {
-      console.error('Error fetching chat sessions:', error);
-    } else if (data) {
-      // Group messages by session_id.
-      const sessionsMap = {};
-      data.forEach((msg) => {
-        if (!sessionsMap[msg.session_id]) {
-          sessionsMap[msg.session_id] = {
-            session_id: msg.session_id,
-            messages: [],
-            lastMessage: msg,
-          };
-        }
-        sessionsMap[msg.session_id].messages.push(msg);
-        // Update lastMessage if this message is newer.
-        if (new Date(msg.created_at) > new Date(sessionsMap[msg.session_id].lastMessage.created_at)) {
-          sessionsMap[msg.session_id].lastMessage = msg;
-        }
-      });
-      // Convert the sessions map to an array and sort by most recent activity.
-      const sessionsArray = Object.values(sessionsMap).sort(
-        (a, b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
-      );
-      setSessions(sessionsArray);
-    }
-  };
-
-  // Initial fetch of sessions plus a realtime subscription for changes.
+  // Always call hooks unconditionally.
   useEffect(() => {
-    fetchSessions();
-
-    // Subscribe to realtime INSERT events for chat messages.
-    const channel = supabase
-      .channel('chat_sessions_channel')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
-        },
-        (payload) => {
-          console.log('New chat message payload:', payload);
-          // For simplicity, re-fetch the sessions on each new message.
-          fetchSessions();
+    // Only proceed if a valid admin session exists.
+    if (session && session.user && allowedAdminEmails.includes(session.user.email.toLowerCase())) {
+      const fetchSessions = async () => {
+        const { data, error } = await supabase
+          .from('chat_messages')
+          .select('session_id, message, created_at, sender');
+        if (error) {
+          console.error('Error fetching chat sessions:', error);
+        } else if (data) {
+          // Group messages by session_id.
+          const sessionsMap = {};
+          data.forEach((msg) => {
+            if (!sessionsMap[msg.session_id]) {
+              sessionsMap[msg.session_id] = {
+                session_id: msg.session_id,
+                messages: [],
+                lastMessage: msg,
+              };
+            }
+            sessionsMap[msg.session_id].messages.push(msg);
+            // Update lastMessage if this message is newer.
+            if (new Date(msg.created_at) > new Date(sessionsMap[msg.session_id].lastMessage.created_at)) {
+              sessionsMap[msg.session_id].lastMessage = msg;
+            }
+          });
+          // Convert sessionsMap to array and sort by most recent activity.
+          const sessionsArray = Object.values(sessionsMap).sort(
+            (a, b) => new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
+          );
+          setSessions(sessionsArray);
         }
-      )
-      .subscribe();
+      };
 
-    // Cleanup the subscription when the component unmounts.
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      fetchSessions();
+
+      // Subscribe to realtime INSERT events for chat messages.
+      const channel = supabase
+        .channel('chat_sessions_channel')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'chat_messages',
+          },
+          (payload) => {
+            console.log('New chat message payload:', payload);
+            fetchSessions();
+          }
+        )
+        .subscribe();
+
+      // Cleanup the subscription on unmount.
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [session]);
+
+  // Now, conditionally render if needed.
+  if (loading) return <div>Loading...</div>;
+  if (!session || !session.user || !allowedAdminEmails.includes(session.user.email.toLowerCase())) {
+    return <Navigate to="/admin-dashboard" replace />;
+  }
 
   return (
     <Container sx={{ mt: 4 }}>
+      <AdminBackButton />
       <Typography variant="h4" gutterBottom>
         Chat Sessions
       </Typography>
       {sessions.length > 0 ? (
         <List>
-          {sessions.map((session) => (
-            <ListItem key={session.session_id} divider>
+          {sessions.map((sessionItem) => (
+            <ListItem key={sessionItem.session_id} divider>
               <ListItemText
-                primary={`Session ID: ${session.session_id}`}
-                secondary={`Last message by ${session.lastMessage.sender}: ${session.lastMessage.message}`}
+                primary={`Session ID: ${sessionItem.session_id}`}
+                secondary={`Last message by ${sessionItem.lastMessage.sender}: ${sessionItem.lastMessage.message}`}
               />
-              {/* Link to a detailed chat view with the session ID passed as a parameter */}
-              <Button variant="outlined" component={Link} to={`/admin/chat/${session.session_id}`}>
+              <Button
+                variant="outlined"
+                component={Link}
+                to={`/admin/chat/${sessionItem.session_id}`}
+              >
                 View Chat
               </Button>
             </ListItem>
