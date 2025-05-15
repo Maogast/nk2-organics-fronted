@@ -1,5 +1,4 @@
 // src/components/ChatBot.jsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import {
@@ -73,7 +72,11 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
           filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
-          setMessages((prev) => [...prev, payload.new]);
+          // Check and prevent duplicate messages.
+          setMessages((prev) => {
+            if (prev.find((msg) => msg.id === payload.new.id)) return prev;
+            return [...prev, payload.new];
+          });
         }
       )
       .subscribe();
@@ -95,10 +98,16 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const handleSend = async () => {
     if (newMsg.trim() === '') return;
     const sender = isAdmin ? 'admin' : 'user';
-    const { error } = await supabase.from('chat_messages').insert([
-      { sender, message: newMsg, session_id: sessionId },
-    ]);
-    if (!error) {
+    // Use "returning" option so that the inserted row is returned.
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .insert([{ sender, message: newMsg, session_id: sessionId }], { returning: 'representation' });
+    if (!error && data && data.length > 0) {
+      // Immediately update messages state if the new message is not already present.
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === data[0].id)) return prev;
+        return [...prev, data[0]];
+      });
       setNewMsg('');
     } else {
       console.error('Error sending message:', error);

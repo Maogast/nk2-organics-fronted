@@ -1,5 +1,5 @@
 // src/components/Navbar.js
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -17,7 +17,7 @@ import { CartContext } from '../context/cartContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { supabase } from '../utils/supabaseClient';
+import { useAuth } from '../context/AuthContext';
 
 function Navbar() {
   const { cartItems } = useContext(CartContext);
@@ -25,29 +25,40 @@ function Navbar() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorElNav, setAnchorElNav] = useState(null);
 
-  // Use state to track the current user session.
-  const [session, setSession] = useState(null);
+  // Retrieve the session from our AuthContext.
+  const { session, loading } = useAuth();
 
-  useEffect(() => {
-    // Fetch the current session using Supabase's v2 API method.
-    const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-    };
+  // Define allowed admin emails.
+  const allowedAdminEmails = [
+    "stevemagare4@gmail.com",
+    "sacalivinmocha@gmail.com",
+    "stevecr58@gmail.com"
+  ];
+  const isAdmin = session && session.user && allowedAdminEmails.includes(session.user.email.toLowerCase());
 
-    fetchSession();
+  // Construct navigation links.
+  // Always include Home, Products, and Checkout.
+  // Then, if loading is complete, if the user is logged in:
+  //   * If the user is an admin, show "Admin Dashboard"
+  //   * Otherwise, show "Dashboard" for regular customers.
+  // If not logged in, show "Login".
+  let navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' },
+    { name: 'Checkout', path: '/checkout' },
+  ];
+  if (!loading) {
+    if (session) {
+      if (isAdmin) {
+        navLinks.push({ name: 'Admin Dashboard', path: '/admin-dashboard' });
+      } else {
+        navLinks.push({ name: 'Dashboard', path: '/dashboard' });
+      }
+    } else {
+      navLinks.push({ name: 'Login', path: '/login' });
+    }
+  }
 
-    // Subscribe to auth state changes using the v2 API.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  // Handles for mobile navigation menu.
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -55,21 +66,6 @@ function Navbar() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
-  // Conditionally set the customer-specific navigation link.
-  // When not logged in, show "Login" (which navigates to /login); when logged in, show "Dashboard".
-  const customerLink = session
-    ? { name: 'Dashboard', path: '/dashboard' }
-    : { name: 'Login', path: '/login' };
-
-  // Array of navigation links.
-  // Removed the "Admin Login" link in favor of unified login.
-  const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Products', path: '/products' },
-    { name: 'Checkout', path: '/checkout' },
-    customerLink, // Shows either "Login" or "Dashboard"
-  ];
 
   return (
     <AppBar

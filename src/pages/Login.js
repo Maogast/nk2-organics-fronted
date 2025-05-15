@@ -1,10 +1,9 @@
 // src/pages/Login.js
 import React, { useState } from 'react';
-import { supabase } from '../utils/supabaseClient';
 import { Container, TextField, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-// List of allowed admin email addresses.
 const allowedAdminEmails = [
   "stevemagare4@gmail.com",
   "sacalivinmocha@gmail.com",
@@ -15,23 +14,20 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setMessage(error.message);
-    } else {
-      setMessage('');
+    try {
+      await login(email, password);
       const lowerEmail = email.toLowerCase();
-      console.log('Login detected for:', lowerEmail);
       if (allowedAdminEmails.includes(lowerEmail)) {
-        console.log('Admin detected. Redirecting to /admin-dashboard');
         navigate('/admin-dashboard');
       } else {
-        console.log('Non-admin detected. Redirecting to /dashboard');
         navigate('/dashboard');
       }
+    } catch (error) {
+      setMessage(error.message);
     }
   };
 

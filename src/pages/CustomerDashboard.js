@@ -11,15 +11,19 @@ import {
   CircularProgress,
   Box,
 } from '@mui/material';
-import { supabase } from '../utils/supabaseClient';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CustomerDashboard = () => {
-  // Local states for orders, error messages, and loading state
+  // Get the session and loading state from AuthContext.
+  const { session, loading } = useAuth();
+  
+  // Local states for orders, error messages, and orders loading.
   const [orders, setOrders] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
-  // Function to fetch orders for the given customer email.
+  // Function to fetch orders for the logged-in customer.
   const fetchOrders = async (customerEmail) => {
     try {
       const res = await axios.get('/api/customerOrders', {
@@ -32,65 +36,59 @@ const CustomerDashboard = () => {
       setErrorMessage('Failed to fetch orders.');
       console.error('Error fetching customer orders:', error);
     } finally {
-      setLoading(false);
+      setLoadingOrders(false);
     }
   };
 
   useEffect(() => {
-    // Asynchronously retrieve the session and fetch the orders for the logged-in user.
-    const getUserAndFetchOrders = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        setErrorMessage('Error retrieving session.');
-        console.error('Session retrieval error:', error);
-        setLoading(false);
-        return;
-      }
-      if (session && session.user && session.user.email) {
-        fetchOrders(session.user.email);
-      } else {
-        setErrorMessage('User is not logged in.');
-        setLoading(false);
-      }
-    };
+    if (session && session.user && session.user.email) {
+      fetchOrders(session.user.email);
+    } else {
+      setLoadingOrders(false);
+    }
+  }, [session]);
 
-    getUserAndFetchOrders();
-  }, []);
+  // While authentication or orders are loading, show a spinner.
+  if (loading || loadingOrders) {
+    return (
+      <Container sx={{ mt: 4, pb: 8 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Box>
+      </Container>
+    );
+  }
+
+  // If no session exists, redirect the user to the login page.
+  if (!session) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
-    // A Container with top margin and bottom padding ensures content isn’t overlapped by a fixed footer.
     <Container sx={{ mt: 4, pb: 8 }}>
       <Typography variant="h4" gutterBottom>
         Order Tracking Dashboard
       </Typography>
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          {errorMessage && (
-            <Typography color="error" sx={{ my: 2 }}>
-              {errorMessage}
-            </Typography>
-          )}
-          <List>
-            {orders.map((order) => (
-              <React.Fragment key={order._id}>
-                <ListItem>
-                  <ListItemText
-                    primary={`Order ID: ${order._id}`}
-                    secondary={`Status: ${order.status || 'pending'} – Total: Ksh ${order.totalPrice}`}
-                  />
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
-          </List>
-          {orders.length === 0 && !errorMessage && (
-            <Typography sx={{ mt: 2 }}>No orders found.</Typography>
-          )}
-        </>
+      {errorMessage && (
+        <Typography color="error" sx={{ my: 2 }}>
+          {errorMessage}
+        </Typography>
+      )}
+      <List>
+        {orders.map((order) => (
+          <React.Fragment key={order._id}>
+            <ListItem>
+              <ListItemText
+                primary={`Order ID: ${order._id}`}
+                secondary={`Status: ${order.status || 'pending'} – Total: Ksh ${order.totalPrice}`}
+              />
+            </ListItem>
+            <Divider />
+          </React.Fragment>
+        ))}
+      </List>
+      {orders.length === 0 && !errorMessage && (
+        <Typography sx={{ mt: 2 }}>No orders found.</Typography>
       )}
     </Container>
   );

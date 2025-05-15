@@ -1,9 +1,12 @@
 // src/App.js
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { CartProvider } from './context/cartContext';
+import { AuthProvider } from './context/AuthContext';
+import theme from './theme';
 import HomePage from './pages/HomePage'; // Eagerly loaded
 import ChatBot from './components/ChatBot'; // ChatBot widget
 
@@ -28,56 +31,85 @@ const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription
 const AdminChatSessions = lazy(() => import('./pages/AdminChatSessions'));
 const AdminChatDetail = lazy(() => import('./pages/AdminChatDetail'));
 
+// A simple error boundary component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("Error Boundary caught an error", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div>Something went wrong. Please refresh or try again later.</div>;
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <Navbar />
-        {/* Main content wrapper with top padding to offset the fixed header */}
-        <div style={{ paddingTop: '90px', minHeight: 'calc(100vh - 90px)' }}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/products" element={<ProductPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              <Route path="/terms" element={<TermsPage />} />
+    <ThemeProvider theme={theme}>
+      <CartProvider>
+        <AuthProvider>
+          <Router>
+            <Navbar />
+            {/* Main content wrapper with top padding to offset the fixed header */}
+            <div style={{ paddingTop: '90px', minHeight: 'calc(100vh - 90px)' }}>
+              <ErrorBoundary>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/products" element={<ProductPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
 
-              {/* Unified Login Page */}
-              <Route path="/login" element={<Auth />} />
+                    {/* Unified Login Page */}
+                    <Route path="/login" element={<Auth />} />
 
-              {/* Customer Specific Routes */}
-              <Route path="/dashboard" element={<CustomerDashboard />} />
+                    {/* Customer Specific Routes */}
+                    <Route path="/dashboard" element={<CustomerDashboard />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin-dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/analytics" element={<AdminAnalytics />} />
-              <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
+                    {/* Admin Routes */}
+                    <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                    <Route path="/admin/analytics" element={<AdminAnalytics />} />
+                    <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
 
-              {/* Admin Chat Routes */}
-              <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
-              <Route path="/admin/chat/:sessionId" element={<AdminChatDetail />} />
-            </Routes>
-          </Suspense>
-        </div>
-        <Footer />
+                    {/* Admin Chat Routes */}
+                    <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
+                    <Route path="/admin/chat/:sessionId" element={<AdminChatDetail />} />
 
-        {/* Floating ChatBot widget positioned above the footer */}
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 'calc(90px + 20px)', // leaves space for Footer
-            right: 20,
-            zIndex: 1100,
-          }}
-        >
-          <ChatBot />
-        </div>
-      </Router>
-    </CartProvider>
+                    {/* Redirect /admin to /admin-dashboard */}
+                    <Route path="/admin" element={<Navigate to="/admin-dashboard" replace />} />
+                  </Routes>
+                </Suspense>
+              </ErrorBoundary>
+            </div>
+            <Footer />
+
+            {/* Floating ChatBot widget positioned above the footer */}
+            <div
+              style={{
+                position: 'fixed',
+                bottom: 'calc(90px + 20px)', // leaves space for Footer
+                right: 20,
+                zIndex: 1100,
+              }}
+            >
+              <ChatBot />
+            </div>
+          </Router>
+        </AuthProvider>
+      </CartProvider>
+    </ThemeProvider>
   );
 }
 
