@@ -6,6 +6,9 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Trust the first proxy (this is necessary for proper functioning of express-rate-limit)
+app.set('trust proxy', 1);
+
 // Rate limiting middleware.
 const rateLimit = require('express-rate-limit');
 const ordersLimiter = rateLimit({

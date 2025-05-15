@@ -24,10 +24,13 @@ const Login = () => {
     } else {
       setMessage('');
       const lowerEmail = email.toLowerCase();
+      console.log('Login detected for:', lowerEmail);
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/admin-dashboard'); // Redirect admin users.
+        console.log('Admin detected. Redirecting to /admin-dashboard');
+        navigate('/admin-dashboard');
       } else {
-        navigate('/dashboard');         // Redirect non-admin users.
+        console.log('Non-admin detected. Redirecting to /dashboard');
+        navigate('/dashboard');
       }
     }
   };

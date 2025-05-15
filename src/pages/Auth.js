@@ -21,18 +21,28 @@ const Auth = () => {
 
   // Listen for auth state changes (this will catch email confirmation logins)
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && session.user) {
-        const lowerEmail = session.user.email.toLowerCase();
-        if (allowedAdminEmails.includes(lowerEmail)) {
-          navigate('/admin-dashboard');  // Send admin users to the admin dashboard.
+    // Destructure the nested subscription from the returned data.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state change event:', event);
+        if (session && session.user) {
+          const lowerEmail = session.user.email.toLowerCase();
+          console.log('User session detected for:', lowerEmail);
+          if (allowedAdminEmails.includes(lowerEmail)) {
+            console.log('Admin detected. Redirecting to /admin-dashboard');
+            navigate('/admin-dashboard');
+          } else {
+            console.log('Non-admin detected. Redirecting to /dashboard');
+            navigate('/dashboard');
+          }
         } else {
-          navigate('/dashboard');        // Send non-admin users to the customer dashboard.
+          console.log('No session detected');
         }
       }
-    });
+    );
     return () => {
-      authListener?.unsubscribe();
+      // Unsubscribe from the listener when the component unmounts.
+      subscription.unsubscribe();
     };
   }, [navigate]);
 
@@ -54,10 +64,13 @@ const Auth = () => {
     } else {
       setMessage('Logged in successfully!');
       const lowerEmail = email.toLowerCase();
+      console.log('Explicit sign in detected for:', lowerEmail);
       if (allowedAdminEmails.includes(lowerEmail)) {
-        navigate('/admin-dashboard'); // Redirect admin users.
+        console.log('Redirecting admin from sign in to /admin-dashboard');
+        navigate('/admin-dashboard');
       } else {
-        navigate('/dashboard');         // Redirect non-admin users.
+        console.log('Redirecting non-admin from sign in to /dashboard');
+        navigate('/dashboard');
       }
     }
   };
