@@ -10,12 +10,13 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default async function handler(req, res) {
   const { method } = req;
   // Remove any query string.
-  const cleanedUrl = req.url.split('?')[0]; // e.g. "/api/orders/123/confirm-payment" or "/orders/123/confirm-payment"
+  const cleanedUrl = req.url.split('?')[0];
+
   // Split the URL path into segments.
   let urlParts = cleanedUrl.split('/').filter((part) => part);
 
-  // Normalize URL parts: if the first element is "api" or "orders", remove it.
-  if (urlParts[0] === 'api' || urlParts[0] === 'orders') {
+  // Normalize URL parts: remove all leading segments that are "api" or "orders".
+  while (urlParts.length > 0 && (urlParts[0] === 'api' || urlParts[0] === 'orders')) {
     urlParts.shift();
   }
 
@@ -24,21 +25,20 @@ export default async function handler(req, res) {
     if (method === 'GET') {
       try {
         // Use query parameters for pagination if provided.
-        // By default, fetch 50 records starting from offset 0.
         const limit = req.query.limit ? parseInt(req.query.limit, 10) : 50;
         const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
-  
+
         // Select only the needed fields.
         const selectFields = 'id, customer_name, customer_email, customer_address, total, transaction_id, order_status, payment_status, order_details, created_at';
-  
+
         const query = supabase
           .from('orders')
           .select(selectFields)
           .range(offset, offset + limit - 1);
-  
+
         const { data, error } = await query;
         if (error) throw error;
-  
+
         // Transform from snake_case to camelCase for the frontend.
         const ordersCamelCase = (data || []).map((order) => ({
           _id: order.id || order._id,
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
           items: order.order_details,
           createdAt: order.created_at,
         }));
-  
+
         return res.status(200).json({ orders: ordersCamelCase });
       } catch (error) {
         console.error('Error fetching orders:', error);
@@ -68,13 +68,13 @@ export default async function handler(req, res) {
           .select();
         if (error) throw error;
         console.log('New order inserted:', data);
-  
+
         if (data && data.length > 0) {
           sendOrderNotification(data[0]).catch((notificationError) => {
             console.error('Error sending notification email:', notificationError);
           });
         }
-  
+
         return res.status(200).json(data);
       } catch (error) {
         console.error('Order Insertion Error:', error);
@@ -85,11 +85,11 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: `Method ${method} not allowed on /api/orders` });
     }
   }
-  
+
   // For endpoints with an order ID (such as /api/orders/:orderId or /api/orders/:orderId/confirm-payment)
   if (urlParts.length >= 1) {
     const orderId = urlParts[0];
-  
+
     if (method === 'PUT') {
       if (urlParts.length === 2 && urlParts[1] === 'confirm-payment') {
         // Confirm payment endpoint.
@@ -140,7 +140,7 @@ export default async function handler(req, res) {
       return res.status(405).json({ error: `Method ${method} not allowed on /api/orders/${orderId}` });
     }
   }
-  
+
   // Fallback.
   res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
   return res.status(405).json({ error: `Method ${method} not allowed` });
