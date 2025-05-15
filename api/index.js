@@ -62,8 +62,8 @@ app.get('/api/customerOrders', (req, res) => {
 // For orders, we apply rate limiting and caching on GET, then use our handler for all subpaths.
 app.use('/api/orders', ordersHandler);
 
-// Analytics endpoint.
-app.get('/api/analytics', (req, res) => {
+// Analytics endpoint - supports both with and without a trailing slash.
+app.get(['/api/analytics', '/api/analytics/'], (req, res) => {
   analyticsHandler(req, res);
 });
 
