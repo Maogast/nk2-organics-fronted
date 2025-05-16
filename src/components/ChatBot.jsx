@@ -12,6 +12,8 @@ import {
   Paper,
   IconButton,
   Collapse,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -43,6 +45,12 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const [openChat, setOpenChat] = useState(isAdmin ? true : false);
   // Ref for auto-scrolling.
   const messagesEndRef = useRef(null);
+
+  // Use theme and media query to adjust mobile view.
+  const theme = useTheme();
+  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  // When on mobile and not admin, add extra bottom margin so it doesn't cover footer.
+  const mobileBottom = isMobileView ? 80 : 16;
 
   useEffect(() => {
     // Fetch existing messages for the session.
@@ -87,30 +95,32 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     };
   }, [sessionId]);
 
-  // Scroll to bottom when messages update.
+  // Auto-scroll to the bottom whenever messages update.
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Function to send a message.
   const handleSend = async () => {
     if (newMsg.trim() === '') return;
     const sender = isAdmin ? 'admin' : 'user';
-    // Use "returning" option so that the inserted row is returned.
-    const { data, error } = await supabase
-      .from('chat_messages')
-      .insert([{ sender, message: newMsg, session_id: sessionId }], { returning: 'representation' });
-    if (!error && data && data.length > 0) {
-      // Immediately update messages state if the new message is not already present.
-      setMessages((prev) => {
-        if (prev.find((m) => m.id === data[0].id)) return prev;
-        return [...prev, data[0]];
-      });
-      setNewMsg('');
-    } else {
-      console.error('Error sending message:', error);
+    try {
+      // Insert message and request the inserted record back.
+      const { data, error } = await supabase
+        .from('chat_messages')
+        .insert([{ sender, message: newMsg, session_id: sessionId }], { returning: 'representation' });
+      if (!error && data && data.length > 0) {
+        // Immediately update the messages state with the new message.
+        setMessages((prev) => {
+          if (prev.find((m) => m.id === data[0].id)) return prev;
+          return [...prev, data[0]];
+        });
+        setNewMsg('');
+      } else {
+        console.error('Error sending message:', error);
+      }
+    } catch (err) {
+      console.error('Unexpected error sending message:', err);
     }
   };
 
@@ -129,7 +139,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         width: { xs: '90%', sm: 300 },
         maxHeight: '80vh',
         position: 'fixed',
-        bottom: 16,
+        bottom: mobileBottom,
         right: 16,
         zIndex: 1000,
       };
@@ -195,7 +205,10 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
             onKeyPress={(e) => {
-              if (e.key === 'Enter') handleSend();
+              if (e.key === 'Enter') {
+                e.preventDefault(); // Prevent form submit/reload
+                handleSend();
+              }
             }}
           />
           <Button variant="contained" onClick={handleSend}>

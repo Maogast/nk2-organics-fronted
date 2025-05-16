@@ -9,6 +9,20 @@
       }
     },
     {
+      "src": "api/analytics.js",
+      "use": "@vercel/node",
+      "config": {
+        "regions": ["fra1"]
+      }
+    },
+    {
+      "src": "api/customerOrders.js",
+      "use": "@vercel/node",
+      "config": {
+        "regions": ["fra1"]
+      }
+    },
+    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -32,6 +46,14 @@
     {
       "src": "/static/(.*)",
       "dest": "/static/$1"
+    },
+    {
+      "src": "/api/analytics",
+      "dest": "/api/analytics.js"
+    },
+    {
+      "src": "/api/customerOrders",
+      "dest": "/api/customerOrders.js"
     },
     {
       "src": "/api/(.*)",

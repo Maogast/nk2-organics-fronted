@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: `Method ${req.method} not allowed` });
   }
   
+  // Retrieve customer email from request headers.
   const customerEmail = req.headers['x-customer-email'];
   
   if (!customerEmail) {
@@ -18,14 +19,19 @@ export default async function handler(req, res) {
   }
   
   try {
-    const { data, error } = await supabase.from('orders').select();
+    // Fetch all orders.
+    const { data, error } = await supabase
+      .from('orders')
+      .select();
     if (error) throw error;
     
-    // Filter orders by the logged-in customer's email
-    const customerOrders = (data || []).filter(order => order.customer_email === customerEmail);
+    // Filter orders by the customer email.
+    const customerOrders = (data || []).filter(
+      (order) => order.customer_email === customerEmail
+    );
     
-    // Transform from snake_case to camelCase for frontend use
-    const ordersCamelCase = customerOrders.map(order => ({
+    // Transform field names from snake_case to camelCase.
+    const ordersCamelCase = customerOrders.map((order) => ({
       _id: order.id,
       customerName: order.customer_name,
       email: order.customer_email,
@@ -40,7 +46,7 @@ export default async function handler(req, res) {
     
     return res.status(200).json({ orders: ordersCamelCase });
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching customer orders:", err);
     return res.status(500).json({ error: err.message });
   }
 }

@@ -67,7 +67,7 @@ const AdminAnalytics = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ mt: 4, mb: 14 }}> {/* Added mb: 14 ensures content won't be covered by the footer */}
       <AdminBackButton />
       <Typography variant="h4" gutterBottom>
         Sales Analytics
