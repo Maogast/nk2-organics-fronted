@@ -14,6 +14,8 @@ import {
   Collapse,
   useTheme,
   useMediaQuery,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -37,20 +39,29 @@ const getSessionId = () => {
   For visitors, the session ID is generated/retrieved from localStorage.
 */
 const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
-  // Use provided session ID (for admin) or a visitor-generated session.
+  // Use provided session ID (for admin) or generate one for visitors.
   const sessionId = isAdmin && selectedSessionId ? selectedSessionId : getSessionId();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
-  // For admin, open chat by default; for visitors, allow toggling.
+  // For admin, open chat by default; for visitors, start collapsed.
   const [openChat, setOpenChat] = useState(isAdmin ? true : false);
   // Ref for auto-scrolling.
   const messagesEndRef = useRef(null);
+  // State for error toast.
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [errorToast, setErrorToast] = useState('');
 
-  // Use theme and media query to adjust mobile view.
+  // Use theme and media query.
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  // When on mobile and not admin, add extra bottom margin so it doesn't cover footer.
+  // Extra bottom offset on mobile.
   const mobileBottom = isMobileView ? 80 : 16;
+
+  // Define sizing constants.
+  // For visitors, set a compact expanded height.
+  const chatExpandedHeight = isMobileView ? "300px" : "70vh";
+  const headerHeight = "60px"; // Chat header area.
+  const inputAreaHeight = "60px"; // Input area (TextField + Button).
 
   useEffect(() => {
     // Fetch existing messages for the session.
@@ -80,7 +91,6 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
           filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
-          // Check and prevent duplicate messages.
           setMessages((prev) => {
             if (prev.find((msg) => msg.id === payload.new.id)) return prev;
             return [...prev, payload.new];
@@ -89,13 +99,12 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
       )
       .subscribe();
 
-    // Cleanup subscription on unmount.
     return () => {
       supabase.removeChannel(channel);
     };
   }, [sessionId]);
 
-  // Auto-scroll to the bottom whenever messages update.
+  // Whenever messages update, auto-scroll to the bottom.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -104,28 +113,32 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const handleSend = async () => {
     if (newMsg.trim() === '') return;
     const sender = isAdmin ? 'admin' : 'user';
+    const msgToSend = newMsg;
+    // Immediately clear the input field.
+    setNewMsg('');
+
     try {
-      // Insert message and request the inserted record back.
       const { data, error } = await supabase
         .from('chat_messages')
-        .insert([{ sender, message: newMsg, session_id: sessionId }], { returning: 'representation' });
+        .insert([{ sender, message: msgToSend, session_id: sessionId }], { returning: 'representation' });
       if (!error && data && data.length > 0) {
-        // Immediately update the messages state with the new message.
         setMessages((prev) => {
           if (prev.find((m) => m.id === data[0].id)) return prev;
           return [...prev, data[0]];
         });
-        setNewMsg('');
       } else {
         console.error('Error sending message:', error);
+        setErrorToast('Oops! Failed to send your message. Please try again.');
+        setErrorOpen(true);
       }
     } catch (err) {
       console.error('Unexpected error sending message:', err);
+      setErrorToast('An unexpected error occurred. Please try again.');
+      setErrorOpen(true);
     }
   };
 
-  // Conditional styles.
-  // In admin mode, remove fixed positioning and add extra margin so it won't be overlapped by the footer.
+  // Paper container styles.
   const paperStyles = isAdmin
     ? {
         width: '100%',
@@ -133,90 +146,127 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         p: 2,
         mx: 'auto',
         my: 2,
-        mb: 12, // Adjust this margin value to avoid footer overlap.
+        mb: 12,
       }
     : {
-        width: { xs: '90%', sm: 300 },
-        maxHeight: '80vh',
+        width: { xs: '85%', sm: 300 },
+        // When open, use a fixed compact height; when closed, auto height.
+        height: openChat ? chatExpandedHeight : 'auto',
         position: 'fixed',
         bottom: mobileBottom,
         right: 16,
         zIndex: 1000,
+        transition: 'height 0.3s ease',
       };
 
   return (
-    <Paper elevation={3} sx={paperStyles}>
-      {/* Chat Header */}
-      <Box
-        sx={{
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#1976d2',
-          color: '#fff',
-          borderTopLeftRadius: 4,
-          borderTopRightRadius: 4,
-        }}
-      >
-        <Typography variant="h6">
-          {isAdmin ? 'Chat with Visitor' : 'Chat with Us'}
-        </Typography>
-        <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: '#fff' }}>
-          {openChat ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButton>
-      </Box>
-      <Collapse in={openChat}>
-        <Box
-          sx={{
-            p: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '60vh',
-            overflowY: 'auto',
-          }}
-        >
-          <List>
-            {messages.map((msg) => (
-              <ListItem
-                key={msg.id}
+    <>
+      <Paper elevation={3} sx={paperStyles}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: openChat ? '100%' : 'auto' }}>
+          {/* Chat Header */}
+          <Box
+            sx={{
+              height: headerHeight,
+              p: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#1976d2',
+              color: '#fff',
+              borderTopLeftRadius: 4,
+              borderTopRightRadius: 4,
+            }}
+          >
+            <Typography variant="h6">
+              {isAdmin ? 'Chat with Visitor' : 'Chat with Us'}
+            </Typography>
+            <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: '#fff' }}>
+              {openChat ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+          {/* Chat Content Area: only shows when open */}
+          <Collapse in={openChat}>
+            <Box
+              sx={{
+                // Set container height to fill remaining space
+                height: `calc(100% - ${headerHeight})`,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {/* Messages Container - scrollable */}
+              <Box sx={{ flex: 1, overflowY: 'auto', px: 2, py: 1 }}>
+                <List>
+                  {messages.map((msg) => (
+                    <ListItem
+                      key={msg.id}
+                      sx={{
+                        backgroundColor: msg.sender === 'admin' ? '#f0f0f0' : '#e3f2fd',
+                        mb: 1,
+                        borderRadius: 1,
+                      }}
+                    >
+                      <ListItemText
+                        primary={msg.sender === 'admin' ? 'Admin' : 'You'}
+                        secondary={msg.message}
+                      />
+                    </ListItem>
+                  ))}
+                  {/* Dummy element to assist auto-scroll */}
+                  <div ref={messagesEndRef} />
+                </List>
+              </Box>
+              {/* Input Area remains visible at the bottom */}
+              <Box
                 sx={{
-                  backgroundColor: msg.sender === 'admin' ? '#f0f0f0' : '#e3f2fd',
-                  mb: 1,
-                  borderRadius: 1,
+                  height: inputAreaHeight,
+                  px: 2,
+                  py: 1,
+                  borderTop: '1px solid #ccc',
+                  display: 'flex',
+                  gap: 1,
+                  alignItems: 'center',
                 }}
               >
-                <ListItemText
-                  primary={msg.sender === 'admin' ? 'Admin' : 'You'}
-                  secondary={msg.message}
+                <TextField
+                  size="small"
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Type your message..."
+                  value={newMsg}
+                  onChange={(e) => setNewMsg(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
                 />
-              </ListItem>
-            ))}
-            {/* Dummy element to assist auto-scroll */}
-            <div ref={messagesEndRef} />
-          </List>
+                <Button variant="contained" onClick={handleSend}>
+                  Send
+                </Button>
+              </Box>
+            </Box>
+          </Collapse>
         </Box>
-        <Box sx={{ p: 2, display: 'flex', gap: 1 }}>
-          <TextField
-            size="small"
-            fullWidth
-            variant="outlined"
-            placeholder="Type your message..."
-            value={newMsg}
-            onChange={(e) => setNewMsg(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault(); // Prevent form submit/reload
-                handleSend();
-              }
-            }}
-          />
-          <Button variant="contained" onClick={handleSend}>
-            Send
-          </Button>
-        </Box>
-      </Collapse>
-    </Paper>
+      </Paper>
+      {/* Snackbar for error notifications */}
+      <Snackbar
+        open={errorOpen}
+        autoHideDuration={6000}
+        onClose={() => setErrorOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setErrorOpen(false)}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {errorToast}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
