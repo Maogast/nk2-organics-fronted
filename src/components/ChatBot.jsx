@@ -34,37 +34,35 @@ const getSessionId = () => {
 
 /*
   ChatBot props:
-    - isAdmin: if true, adjusts UI for admin use (e.g., labeling and styling).
+    - isAdmin: if true, adjusts UI for admin use.
     - selectedSessionId: for admins, the session ID to interact with.
   For visitors, the session ID is generated/retrieved from localStorage.
 */
 const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
-  // Use provided session ID (for admin) or generate one for visitors.
   const sessionId = isAdmin && selectedSessionId ? selectedSessionId : getSessionId();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
-  // For admin, open chat by default; for visitors, start collapsed.
   const [openChat, setOpenChat] = useState(isAdmin ? true : false);
-  // Ref for auto-scrolling.
   const messagesEndRef = useRef(null);
-  // State for error toast.
   const [errorOpen, setErrorOpen] = useState(false);
   const [errorToast, setErrorToast] = useState('');
 
-  // Use theme and media query.
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
-  // Extra bottom offset on mobile.
-  const mobileBottom = isMobileView ? 80 : 16;
 
-  // Define sizing constants.
-  // For visitors, set a compact expanded height.
-  const chatExpandedHeight = isMobileView ? "300px" : "70vh";
-  const headerHeight = "60px"; // Chat header area.
-  const inputAreaHeight = "60px"; // Input area (TextField + Button).
+  // Since your footer is fixed, define its height (in pixels)
+  const footerHeight = 120; // Adjust this to match your Footer's height.
+  const baseBottomOffset = 30;
+  // On mobile, add an extra offset so the chatbox sits above the footer.
+  const mobileBottom = isMobileView ? footerHeight + baseBottomOffset : baseBottomOffset;
+
+  // Sizing constants:
+  // For visitors, the expanded chatbox has a fixed height.
+  const chatExpandedHeight = isMobileView ? "400px" : "70vh";
+  const headerHeight = "5px";     // The (small) header.
+  const inputAreaHeight = "40px";  // Fixed height for the input field & button.
 
   useEffect(() => {
-    // Fetch existing messages for the session.
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -79,7 +77,6 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     };
     fetchMessages();
 
-    // Subscribe to realtime messages for this session.
     const channel = supabase
       .channel(`chat_messages_channel_${sessionId}`)
       .on(
@@ -104,19 +101,15 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     };
   }, [sessionId]);
 
-  // Whenever messages update, auto-scroll to the bottom.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Function to send a message.
   const handleSend = async () => {
-    if (newMsg.trim() === '') return;
-    const sender = isAdmin ? 'admin' : 'user';
+    if (newMsg.trim() === "") return;
+    const sender = isAdmin ? "admin" : "user";
     const msgToSend = newMsg;
-    // Immediately clear the input field.
-    setNewMsg('');
-
+    setNewMsg(""); // Clear input immediately
     try {
       const { data, error } = await supabase
         .from('chat_messages')
@@ -127,13 +120,13 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
           return [...prev, data[0]];
         });
       } else {
-        console.error('Error sending message:', error);
-        setErrorToast('Oops! Failed to send your message. Please try again.');
+        console.error("Error sending message:", error);
+        setErrorToast("Your message has been sent, but new responses might not appear automatically. Please refresh your page to see updated responses.");
         setErrorOpen(true);
       }
     } catch (err) {
-      console.error('Unexpected error sending message:', err);
-      setErrorToast('An unexpected error occurred. Please try again.');
+      console.error("Unexpected error sending message:", err);
+      setErrorToast("Your message has been sent, but new responses might not appear automatically. Please refresh your page to see updated responses.");
       setErrorOpen(true);
     }
   };
@@ -141,91 +134,95 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   // Paper container styles.
   const paperStyles = isAdmin
     ? {
-        width: '100%',
+        width: "100%",
         maxWidth: 600,
         p: 2,
-        mx: 'auto',
+        mx: "auto",
         my: 2,
         mb: 12,
       }
     : {
-        width: { xs: '85%', sm: 300 },
-        // When open, use a fixed compact height; when closed, auto height.
-        height: openChat ? chatExpandedHeight : 'auto',
-        position: 'fixed',
+        width: { xs: "85%", sm: 300 },
+        height: openChat ? chatExpandedHeight : "auto",
+        position: "fixed",
         bottom: mobileBottom,
         right: 16,
         zIndex: 1000,
-        transition: 'height 0.3s ease',
+        transition: "height 0.3s ease",
       };
 
   return (
     <>
       <Paper elevation={3} sx={paperStyles}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: openChat ? '100%' : 'auto' }}>
+        <Box sx={{ display: "flex", flexDirection: "column", height: openChat ? "100%" : "auto" }}>
           {/* Chat Header */}
           <Box
             sx={{
               height: headerHeight,
               p: 2,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              backgroundColor: '#1976d2',
-              color: '#fff',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              backgroundColor: "#1976d2",
+              color: "#fff",
               borderTopLeftRadius: 4,
               borderTopRightRadius: 4,
             }}
           >
             <Typography variant="h6">
-              {isAdmin ? 'Chat with Visitor' : 'Chat with Us'}
+              {isAdmin ? "Chat with Visitor" : "Chat with Us"}
             </Typography>
-            <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: '#fff' }}>
+            <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: "#fff" }}>
               {openChat ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </IconButton>
           </Box>
-          {/* Chat Content Area: only shows when open */}
-          <Collapse in={openChat}>
+          {/* Chat Content Area */}
+          <Collapse
+            in={openChat}
+            sx={{
+              height: openChat ? `calc(${chatExpandedHeight} - ${headerHeight})` : 0,
+              overflow: "hidden",
+            }}
+          >
             <Box
               sx={{
-                // Set container height to fill remaining space
-                height: `calc(100% - ${headerHeight})`,
-                display: 'flex',
-                flexDirection: 'column',
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
               }}
             >
-              {/* Messages Container - scrollable */}
-              <Box sx={{ flex: 1, overflowY: 'auto', px: 2, py: 1 }}>
+              {/* Messages Container */}
+              <Box sx={{ flex: 1, overflowY: "auto", px: 2, py: 1 }}>
                 <List>
                   {messages.map((msg) => (
                     <ListItem
                       key={msg.id}
                       sx={{
-                        backgroundColor: msg.sender === 'admin' ? '#f0f0f0' : '#e3f2fd',
+                        backgroundColor: msg.sender === "admin" ? "#f0f0f0" : "#e3f2fd",
                         mb: 1,
                         borderRadius: 1,
                       }}
                     >
                       <ListItemText
-                        primary={msg.sender === 'admin' ? 'Admin' : 'You'}
+                        primary={msg.sender === "admin" ? "Admin" : "You"}
                         secondary={msg.message}
                       />
                     </ListItem>
                   ))}
-                  {/* Dummy element to assist auto-scroll */}
                   <div ref={messagesEndRef} />
                 </List>
               </Box>
-              {/* Input Area remains visible at the bottom */}
+              {/* Input Area */}
               <Box
                 sx={{
                   height: inputAreaHeight,
                   px: 2,
                   py: 1,
-                  borderTop: '1px solid #ccc',
-                  display: 'flex',
+                  borderTop: "1px solid #ccc",
+                  display: "flex",
                   gap: 1,
-                  alignItems: 'center',
+                  alignItems: "center",
+                  backgroundColor: "background.paper",
                 }}
               >
                 <TextField
@@ -236,7 +233,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
                   value={newMsg}
                   onChange={(e) => setNewMsg(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === "Enter") {
                       e.preventDefault();
                       handleSend();
                     }
@@ -250,19 +247,13 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
           </Collapse>
         </Box>
       </Paper>
-      {/* Snackbar for error notifications */}
       <Snackbar
         open={errorOpen}
         autoHideDuration={6000}
         onClose={() => setErrorOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert
-          onClose={() => setErrorOpen(false)}
-          severity="error"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
+        <Alert onClose={() => setErrorOpen(false)} severity="info" variant="filled" sx={{ width: "100%" }}>
           {errorToast}
         </Alert>
       </Snackbar>
