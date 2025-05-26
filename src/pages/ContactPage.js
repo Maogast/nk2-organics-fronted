@@ -8,7 +8,6 @@ function ContactPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simple validation:
     const form = e.target;
     const name = form.elements["yourName"].value.trim();
     const email = form.elements["emailAddress"].value.trim();
@@ -17,21 +16,62 @@ function ContactPage() {
       setError("All fields are required.");
       return;
     }
-    // Submit form or simulate send message; then:
     setSuccess("Message sent successfully!");
     setError('');
     form.reset();
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ mt: 4, mb: { xs: 16, sm: 16 } }}>
       <Typography variant="h3" gutterBottom>
         Contact Us
       </Typography>
-      <Box component="form" noValidate sx={{ mt: 1 }} onSubmit={handleSubmit}>
-        <TextField name="yourName" label="Your Name" fullWidth margin="normal" />
-        <TextField name="emailAddress" label="Email Address" type="email" fullWidth margin="normal" />
-        <TextField name="message" label="Message" multiline rows={4} fullWidth margin="normal" />
+
+      {/* Hotline / Contact Info Banner */}
+      <Box
+        sx={{
+          backgroundColor: 'primary.main',
+          p: 2,
+          borderRadius: 2,
+          textAlign: 'center',
+          color: 'white',
+          mb: 3,
+        }}
+      >
+        <Typography variant="h6">
+          Need Immediate Assistance?
+        </Typography>
+        <Typography variant="body1">
+          Call us now at <strong>+254 713624672</strong>
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 1 }}>
+          We’re here to help you with your order and any inquiries 24/7.
+        </Typography>
+      </Box>
+
+      {/* Contact Form */}
+      <Box component="form" noValidate sx={{ mt: 1, pb: 4 }} onSubmit={handleSubmit}>
+        <TextField 
+          name="yourName" 
+          label="Your Name" 
+          fullWidth 
+          margin="normal" 
+        />
+        <TextField 
+          name="emailAddress" 
+          label="Email Address" 
+          type="email" 
+          fullWidth 
+          margin="normal" 
+        />
+        <TextField 
+          name="message" 
+          label="Message" 
+          multiline 
+          rows={4} 
+          fullWidth 
+          margin="normal" 
+        />
         {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
         {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
         <Button variant="contained" color="primary" sx={{ mt: 2 }} type="submit">

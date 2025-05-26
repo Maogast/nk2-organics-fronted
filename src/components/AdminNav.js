@@ -12,7 +12,7 @@ import {
   ListItemButton,
   ListItemText,
   Box,
-  useMediaQuery
+  useMediaQuery,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -24,7 +24,8 @@ const navItems = [
   { label: 'Dashboard', path: '/admin-dashboard' },
   { label: 'Analytics', path: '/admin/analytics' },
   { label: 'Newsletter', path: '/admin/newsletter' },
-  { label: 'Chat Sessions', path: '/admin/chat-sessions' }
+  { label: 'Chat Sessions', path: '/admin/chat-sessions' },
+  { label: 'Contact Messages', path: '/admin/contact-messages' } // New nav item for contact messages.
 ];
 
 const AdminNav = ({ handleLogout }) => {
@@ -63,9 +64,9 @@ const AdminNav = ({ handleLogout }) => {
 
   return (
     <>
-      <AppBar 
+      <AppBar
         // Use sticky positioning with a top offset so this nav appears below the fixed global header.
-        position="sticky" 
+        position="sticky"
         sx={{ top: { xs: '64px', sm: '90px' }, mb: 2 }}
       >
         <Toolbar>
@@ -120,7 +121,7 @@ const AdminNav = ({ handleLogout }) => {
         ModalProps={{ keepMounted: true }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 }
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
         }}
       >
         {drawer}

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import ChatBot from '../components/ChatBot';
-import { Container, Typography } from '@mui/material';
+import { Container, Typography, Box } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import AdminBackButton from '../components/AdminBackButton';
 
@@ -19,7 +19,7 @@ const AdminChatDetail = () => {
 
   if (loading) return <div>Loading...</div>;
 
-  // Check if the session exists and if the user's email is allowed.
+  // Redirect if the admin is not authorized.
   if (!session || !session.user || !allowedAdminEmails.includes(session.user.email.toLowerCase())) {
     return <Navigate to="/admin-dashboard" replace />;
   }
@@ -28,10 +28,12 @@ const AdminChatDetail = () => {
     <Container sx={{ mt: 4, mb: 4 }}>
       <AdminBackButton />
       <Typography variant="h4" gutterBottom>
-        Chat with Visitor - Session: {sessionId}
+        Chat with Visitor (Session: {sessionId})
       </Typography>
-      {/* Render ChatBot in admin mode, passing the selected session ID */}
-      <ChatBot isAdmin={true} selectedSessionId={sessionId} />
+      {/* Render ChatBot in admin mode, which opens automatically */}
+      <Box sx={{ mt: 2 }}>
+        <ChatBot isAdmin={true} selectedSessionId={sessionId} />
+      </Box>
     </Container>
   );
 };

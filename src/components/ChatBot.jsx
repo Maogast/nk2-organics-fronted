@@ -8,24 +8,21 @@ import {
   ListItemText,
   TextField,
   Button,
-  Typography,
   Paper,
   IconButton,
-  Collapse,
   useTheme,
   useMediaQuery,
   Snackbar,
   Alert,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline'; // Chat icon
 
 // Helper function to retrieve or generate a session ID for visitors.
 const getSessionId = () => {
-  const sessionKey = 'chat_session_id';
+  const sessionKey = "chat_session_id";
   let sessionId = localStorage.getItem(sessionKey);
   if (!sessionId) {
-    // In production, consider using a more robust method (e.g., uuid).
     sessionId = Math.random().toString(36).substr(2, 9);
     localStorage.setItem(sessionKey, sessionId);
   }
@@ -41,38 +38,38 @@ const getSessionId = () => {
 const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const sessionId = isAdmin && selectedSessionId ? selectedSessionId : getSessionId();
   const [messages, setMessages] = useState([]);
-  const [newMsg, setNewMsg] = useState('');
+  const [newMsg, setNewMsg] = useState("");
   const [openChat, setOpenChat] = useState(isAdmin ? true : false);
   const messagesEndRef = useRef(null);
   const [errorOpen, setErrorOpen] = useState(false);
-  const [errorToast, setErrorToast] = useState('');
+  const [errorToast, setErrorToast] = useState("");
 
   const theme = useTheme();
-  const isMobileView = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobileView = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Since your footer is fixed, define its height (in pixels)
+  // Footer height (for positioning) 
   const footerHeight = 120; // Adjust this to match your Footer's height.
   const baseBottomOffset = 30;
-  // On mobile, add an extra offset so the chatbox sits above the footer.
   const mobileBottom = isMobileView ? footerHeight + baseBottomOffset : baseBottomOffset;
 
   // Sizing constants:
-  // For visitors, the expanded chatbox has a fixed height.
-  const chatExpandedHeight = isMobileView ? "400px" : "70vh";
-  const headerHeight = "5px";     // The (small) header.
-  const inputAreaHeight = "40px";  // Fixed height for the input field & button.
+  // On mobile, we want the chat window to be smaller.
+  const chatExpandedHeight = isMobileView ? "300px" : "70vh";
+  const fullHeaderHeight = "40px"; // Height for the open chat header.
+  const inputAreaHeight = "40px";  // Fixed height for the input area.
 
+  // Fetch messages and subscribe to real-time updates.
   useEffect(() => {
     const fetchMessages = async () => {
       const { data, error } = await supabase
-        .from('chat_messages')
-        .select('*')
-        .eq('session_id', sessionId)
-        .order('created_at', { ascending: true });
+        .from("chat_messages")
+        .select("*")
+        .eq("session_id", sessionId)
+        .order("created_at", { ascending: true });
       if (!error) {
         setMessages(data);
       } else {
-        console.error('Error fetching messages:', error);
+        console.error("Error fetching messages:", error);
       }
     };
     fetchMessages();
@@ -80,11 +77,11 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     const channel = supabase
       .channel(`chat_messages_channel_${sessionId}`)
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'chat_messages',
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
           filter: `session_id=eq.${sessionId}`,
         },
         (payload) => {
@@ -101,6 +98,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     };
   }, [sessionId]);
 
+  // Auto-scroll to the bottom of messages.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -109,11 +107,11 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     if (newMsg.trim() === "") return;
     const sender = isAdmin ? "admin" : "user";
     const msgToSend = newMsg;
-    setNewMsg(""); // Clear input immediately
+    setNewMsg(""); // Clear the input immediately
     try {
       const { data, error } = await supabase
-        .from('chat_messages')
-        .insert([{ sender, message: msgToSend, session_id: sessionId }], { returning: 'representation' });
+        .from("chat_messages")
+        .insert([{ sender, message: msgToSend, session_id: sessionId }], { returning: "representation" });
       if (!error && data && data.length > 0) {
         setMessages((prev) => {
           if (prev.find((m) => m.id === data[0].id)) return prev;
@@ -131,66 +129,61 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     }
   };
 
-  // Paper container styles.
-  const paperStyles = isAdmin
-    ? {
-        width: "100%",
-        maxWidth: 600,
-        p: 2,
-        mx: "auto",
-        my: 2,
-        mb: 12,
-      }
-    : {
-        width: { xs: "85%", sm: 300 },
-        height: openChat ? chatExpandedHeight : "auto",
-        position: "fixed",
-        bottom: mobileBottom,
-        right: 16,
-        zIndex: 1000,
-        transition: "height 0.3s ease",
-      };
+  // Styles for the open chat window.
+  const paperStyles = {
+    width: { xs: "85%", sm: 300 },
+    height: chatExpandedHeight,
+    position: "fixed",
+    bottom: mobileBottom,
+    right: 16,
+    zIndex: 1000,
+    transition: "height 0.3s ease",
+  };
 
   return (
     <>
-      <Paper elevation={3} sx={paperStyles}>
-        <Box sx={{ display: "flex", flexDirection: "column", height: openChat ? "100%" : "auto" }}>
-          {/* Chat Header */}
-          <Box
-            sx={{
-              height: headerHeight,
-              p: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              backgroundColor: "#1976d2",
-              color: "#fff",
-              borderTopLeftRadius: 4,
-              borderTopRightRadius: 4,
-            }}
-          >
-            <Typography variant="h6">
-              {isAdmin ? "Chat with Visitor" : "Chat with Us"}
-            </Typography>
-            <IconButton onClick={() => setOpenChat(!openChat)} sx={{ color: "#fff" }}>
-              {openChat ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-            </IconButton>
-          </Box>
-          {/* Chat Content Area */}
-          <Collapse
-            in={openChat}
-            sx={{
-              height: openChat ? `calc(${chatExpandedHeight} - ${headerHeight})` : 0,
-              overflow: "hidden",
-            }}
-          >
+      {/* When the chat is closed, show only the floating chat bubble icon */}
+      {!openChat && (
+        <IconButton 
+          onClick={() => setOpenChat(true)}
+          sx={{
+            position: "fixed",
+            bottom: mobileBottom,
+            right: 16,
+            zIndex: 1000,
+            backgroundColor: "#1976d2",
+            width: 50,
+            height: 50,
+            "&:hover": { backgroundColor: "#1565c0" },
+          }}
+        >
+          <ChatBubbleOutlineIcon sx={{ color: "#fff" }} />
+        </IconButton>
+      )}
+
+      {/* When the chat is open, display the chat window */}
+      {openChat && (
+        <Paper elevation={3} sx={paperStyles}>
+          <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+            {/* Chat window header with close button */}
             <Box
               sx={{
+                height: fullHeaderHeight,
+                px: 2,
+                py: 1,
                 display: "flex",
-                flexDirection: "column",
-                height: "100%",
+                justifyContent: "flex-end",
+                backgroundColor: "#1976d2",
+                borderTopLeftRadius: 4,
+                borderTopRightRadius: 4,
               }}
             >
+              <IconButton onClick={() => setOpenChat(false)} sx={{ color: "#fff" }}>
+                <ExpandLessIcon />
+              </IconButton>
+            </Box>
+            {/* Chat Content Area */}
+            <Box sx={{ display: "flex", flexDirection: "column", height: `calc(100% - ${fullHeaderHeight})` }}>
               {/* Messages Container */}
               <Box sx={{ flex: 1, overflowY: "auto", px: 2, py: 1 }}>
                 <List>
@@ -244,9 +237,10 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
                 </Button>
               </Box>
             </Box>
-          </Collapse>
-        </Box>
-      </Paper>
+          </Box>
+        </Paper>
+      )}
+      
       <Snackbar
         open={errorOpen}
         autoHideDuration={6000}

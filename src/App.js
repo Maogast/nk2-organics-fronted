@@ -9,6 +9,7 @@ import { AuthProvider } from './context/AuthContext';
 import theme from './theme';
 import HomePage from './pages/HomePage'; // Eagerly loaded
 import ChatBot from './components/ChatBot'; // ChatBot widget
+import AdminContactMessages from './pages/AdminContactMessages'; // Eagerly imported admin contact page
 
 // Lazy loaded pages for main public routes
 const ProductPage = lazy(() => import('./pages/ProductPage'));
@@ -82,6 +83,7 @@ function App() {
                     <Route path="/admin-dashboard" element={<AdminDashboard />} />
                     <Route path="/admin/analytics" element={<AdminAnalytics />} />
                     <Route path="/admin/newsletter" element={<NewsletterSubscription />} />
+                    <Route path="/admin/contact-messages" element={<AdminContactMessages />} />
 
                     {/* Admin Chat Routes */}
                     <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
