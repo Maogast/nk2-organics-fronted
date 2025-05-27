@@ -1,5 +1,5 @@
 // src/components/ChatBot.jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import {
   Box,
@@ -36,6 +36,7 @@ const getSessionId = () => {
   For visitors, the session ID is generated/retrieved from localStorage.
 */
 const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
+  // If admin and a session id is provided, use that; otherwise, generate or fetch from localStorage.
   const sessionId = isAdmin && selectedSessionId ? selectedSessionId : getSessionId();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState("");
@@ -47,7 +48,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const theme = useTheme();
   const isMobileView = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Footer height (for positioning) 
+  // Footer height (for positioning)
   const footerHeight = 120; // Adjust this to match your Footer's height.
   const baseBottomOffset = 30;
   const mobileBottom = isMobileView ? footerHeight + baseBottomOffset : baseBottomOffset;
@@ -58,22 +59,25 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
   const fullHeaderHeight = "40px"; // Height for the open chat header.
   const inputAreaHeight = "40px";  // Fixed height for the input area.
 
-  // Fetch messages and subscribe to real-time updates.
+  // Wrap fetchMessages in a useCallback so its reference is stable.
+  const fetchMessages = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .select("*")
+      .eq("session_id", sessionId)
+      .order("created_at", { ascending: true });
+    if (!error) {
+      setMessages(data);
+    } else {
+      console.error("Error fetching messages:", error);
+    }
+  }, [sessionId]);
+
   useEffect(() => {
-    const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from("chat_messages")
-        .select("*")
-        .eq("session_id", sessionId)
-        .order("created_at", { ascending: true });
-      if (!error) {
-        setMessages(data);
-      } else {
-        console.error("Error fetching messages:", error);
-      }
-    };
+    // Initial fetch of messages.
     fetchMessages();
 
+    // Subscribe to realtime INSERT events for messages with the current sessionId.
     const channel = supabase
       .channel(`chat_messages_channel_${sessionId}`)
       .on(
@@ -87,7 +91,9 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         (payload) => {
           setMessages((prev) => {
             if (prev.find((msg) => msg.id === payload.new.id)) return prev;
-            return [...prev, payload.new];
+            const updated = [...prev, payload.new];
+            updated.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            return updated;
           });
         }
       )
@@ -96,9 +102,9 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [sessionId]);
+  }, [fetchMessages, sessionId]);
 
-  // Auto-scroll to the bottom of messages.
+  // Auto-scroll to the bottom when messages update.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -113,10 +119,8 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         .from("chat_messages")
         .insert([{ sender, message: msgToSend, session_id: sessionId }], { returning: "representation" });
       if (!error && data && data.length > 0) {
-        setMessages((prev) => {
-          if (prev.find((m) => m.id === data[0].id)) return prev;
-          return [...prev, data[0]];
-        });
+        // Re-fetch messages after successful send to ensure proper ordering.
+        fetchMessages();
       } else {
         console.error("Error sending message:", error);
         setErrorToast("Your message has been sent, but new responses might not appear automatically. Please refresh your page to see updated responses.");
@@ -142,7 +146,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
 
   return (
     <>
-      {/* When the chat is closed, show only the floating chat bubble icon */}
+      {/* When chat is closed, display only the floating chat bubble icon */}
       {!openChat && (
         <IconButton 
           onClick={() => setOpenChat(true)}
@@ -161,7 +165,7 @@ const ChatBot = ({ isAdmin = false, selectedSessionId }) => {
         </IconButton>
       )}
 
-      {/* When the chat is open, display the chat window */}
+      {/* When chat is open, display the full chat window */}
       {openChat && (
         <Paper elevation={3} sx={paperStyles}>
           <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>

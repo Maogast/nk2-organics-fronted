@@ -1,13 +1,14 @@
 // src/pages/AdminChatSessions.js
 import React, { useState, useEffect } from 'react';
-import { 
-  Container, 
-  Typography, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  Button, 
-  Divider 
+import {
+  Container,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  Divider,
+  Box,
 } from '@mui/material';
 import { Link, Navigate } from 'react-router-dom';
 import { supabase } from '../utils/supabaseClient';
@@ -62,7 +63,7 @@ const AdminChatSessions = () => {
     ) {
       fetchSessions();
 
-      // Subscribe to real-time INSERT events to update sessions dynamically.
+      // Subscribe to realtime INSERT events to update sessions dynamically.
       const channel = supabase
         .channel('chat_sessions_channel')
         .on(
@@ -105,7 +106,7 @@ const AdminChatSessions = () => {
                 <ListItemText
                   primary={`Session ID: ${sessionItem.session_id}`}
                   secondary={
-                    <>
+                    <Box>
                       <Typography variant="body2" component="span">
                         Last message by {sessionItem.lastMessage.sender}: {sessionItem.lastMessage.message}
                       </Typography>
@@ -113,16 +114,17 @@ const AdminChatSessions = () => {
                       <Typography variant="caption" color="textSecondary">
                         {new Date(sessionItem.lastMessage.created_at).toLocaleString()}
                       </Typography>
-                    </>
+                    </Box>
                   }
                 />
+                {/* Updated link to use the new dedicated admin reply page */}
                 <Button
                   variant="contained"
                   component={Link}
-                  to={`/admin/chat/${sessionItem.session_id}`}
+                  to={`/admin/chat-reply/${sessionItem.session_id}`}
                   sx={{ ml: 2 }}
                 >
-                  View Chat
+                  Reply Chat
                 </Button>
               </ListItem>
               <Divider />

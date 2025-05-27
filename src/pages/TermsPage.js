@@ -4,7 +4,7 @@ import { Container, Typography } from '@mui/material';
 
 function TermsPage() {
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container sx={{ mt: 4, mb: 4, pb: 10 }}>
       <Typography variant="h3" gutterBottom>
         Terms of Service
       </Typography>
@@ -54,7 +54,7 @@ function TermsPage() {
         <br />
         Email: support@nk-organics.com
         <br />
-        Address: [Your Physical Address]
+        Address: Kasarani, Nairobi, Kenya
       </Typography>
       
       <Typography variant="body1" paragraph>

@@ -10,6 +10,7 @@ import theme from './theme';
 import HomePage from './pages/HomePage'; // Eagerly loaded
 import ChatBot from './components/ChatBot'; // ChatBot widget
 import AdminContactMessages from './pages/AdminContactMessages'; // Eagerly imported admin contact page
+import AdminChatReply from './pages/AdminChatReply'; // Dedicated admin reply page
 
 // Lazy loaded pages for main public routes
 const ProductPage = lazy(() => import('./pages/ProductPage'));
@@ -88,6 +89,8 @@ function App() {
                     {/* Admin Chat Routes */}
                     <Route path="/admin/chat-sessions" element={<AdminChatSessions />} />
                     <Route path="/admin/chat/:sessionId" element={<AdminChatDetail />} />
+                    {/* Dedicated admin reply page */}
+                    <Route path="/admin/chat-reply/:sessionId" element={<AdminChatReply />} />
 
                     {/* Redirect /admin to /admin-dashboard */}
                     <Route path="/admin" element={<Navigate to="/admin-dashboard" replace />} />
