@@ -82,9 +82,9 @@ function HomePage() {
   return (
     <Container
       sx={{
-        mt: { xs: '50px', sm: '60px' },
+        mt: { xs: '40px', sm: '40px' },
         px: { xs: 2, sm: 4 },
-        pb: { xs: '110px', sm: '130px' },
+        pb: { xs: '100px', sm: '120px' },
       }}
     >
       {/* Hero Section (Former design restored) */}
