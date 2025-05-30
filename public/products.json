@@ -302,7 +302,7 @@
   },
   {
     "name": "Jaggery",
-    "description": "Natural sweetener, rich in minerals",
+    "description": "Natural sweetener.",
     "price": 150,
     "imageUrl": "/images/jaggery.png",
     "category": "Baking & Sweet Spices"

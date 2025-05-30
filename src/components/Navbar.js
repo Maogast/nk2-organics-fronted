@@ -90,7 +90,7 @@ function Navbar() {
             style={{ height: '40px', marginRight: '10px' }}
           />
           <Typography variant="h6" component="div">
-            NK-Organics
+            NK~Organics
           </Typography>
         </Box>
 
