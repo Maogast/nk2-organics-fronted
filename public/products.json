@@ -437,7 +437,7 @@
     "name": "Githeri Masala",
     "description": "A locally-inspired spice blend formulated to bring out the best in Githeri.",
     "price": 300,
-    "imageUrl": "/images/githeriMasala.png",
+    "imageUrl": "/images/githeriMasala.jpg",
     "category": "Spices"
   },
   {
@@ -472,7 +472,7 @@
     "name": "Pistachio Seeds",
     "description": "Edible seeds from the pistachio tree, a nutrient-rich snack loaded with healthy fats, protein, and antioxidants.",
     "price": 500,
-    "imageUrl": "/images/pistachioSeeds.png",
+    "imageUrl": "/images/pistachioSeeds.PNG",
     "category": "Seeds & Nuts"
   },
   {
