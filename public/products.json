@@ -18,7 +18,7 @@
     "description": "Anti-inflammatory",
     "price": 200,
     "imageUrl": "/images/turmeric.JPG",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Cinnamon",
@@ -67,133 +67,133 @@
     "description": "Pure, aromatic pods for desserts",
     "price": 500,
     "imageUrl": "/images/vanilla.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Nutmeg",
     "description": "Adds warmth to custards, lattes",
     "price": 150,
     "imageUrl": "/images/nutmeg.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Cloves",
     "description": "Intense aroma for gingerbread, mulled cider",
     "price": 160,
     "imageUrl": "/images/cloves.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Star Anise",
     "description": "Licorice flavor for Asian dishes",
     "price": 300,
     "imageUrl": "/images/star_anise.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Sumac",
     "description": "Tangy Middle Eastern garnish",
     "price": 250,
     "imageUrl": "/images/sumac.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Ashwagandha",
     "description": "Adaptogen for stress relief",
     "price": 300,
     "imageUrl": "/images/ashwagandha.JPG",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Holy Basil (Tulsi)",
     "description": "Supports immunity and clarity",
     "price": 300,
     "imageUrl": "/images/holy_basil.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Lemon-grass",
     "description": "Calming and anti-inflammatory properties",
     "price": 300,
     "imageUrl": "/images/lemon_grass.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Echinacea",
     "description": "Boosts immune system, reduces cold symptoms",
     "price": 300,
     "imageUrl": "/images/echinacea.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Chamomile",
     "description": "Promotes relaxation and better sleep",
     "price": 300,
     "imageUrl": "/images/chamomile.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Thyme",
     "description": "Antimicrobial properties, supports respiratory health",
     "price": 300,
     "imageUrl": "/images/thyme2.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Rosemary",
     "description": "Enhances memory and cognitive function",
     "price": 300,
     "imageUrl": "/images/rosemary2.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Saffron",
     "description": "Rich in antioxidants, enhances mood",
     "price": 500,
     "imageUrl": "/images/saffron.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Fenugreek",
     "description": "Supports lactation and improves digestion",
     "price": 300,
     "imageUrl": "/images/fenugreek.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Garam Masala",
     "description": "Aromatic blend for Indian cuisine",
     "price": 300,
     "imageUrl": "/images/garam_masala.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Annatto",
     "description": "Natural food coloring, rich in antioxidants",
     "price": 300,
     "imageUrl": "/images/annatto.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Allspice",
     "description": "Warm flavor for desserts and stews",
     "price": 400,
     "imageUrl": "/images/allspice.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Cardamom",
     "description": "Aids digestion, freshens breath",
     "price": 400,
     "imageUrl": "/images/cardamom.png",
-    "category": "Global & Specialty Spices"
+    "category": "Spices"
   },
   {
     "name": "Black Pepper",
     "description": "Rich in antioxidants, improves nutrient absorption",
     "price": 250,
     "imageUrl": "/images/black_pepper.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Coriander",
@@ -207,7 +207,7 @@
     "description": "Improves digestion, reduces bloating",
     "price": 200,
     "imageUrl": "/images/fennel_seeds.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Bay Leaves",
@@ -221,56 +221,56 @@
     "description": "Rich in vitamins, adds vibrant color to dishes",
     "price": 180,
     "imageUrl": "/images/paprika.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Chili Powder",
     "description": "Boosts metabolism, adds heat to dishes",
     "price": 200,
     "imageUrl": "/images/chili_powder.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Cumin",
     "description": "Aids digestion, boosts immunity",
     "price": 200,
     "imageUrl": "/images/cumin.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Sage",
     "description": "Improves brain function, supports oral health",
     "price": 300,
     "imageUrl": "/images/sage.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Lavender",
     "description": "Promotes relaxation, reduces stress",
     "price": 350,
     "imageUrl": "/images/lavender.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Peppermint",
     "description": "Relieves headaches, soothes digestion",
     "price": 300,
     "imageUrl": "/images/peppermint.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Onion Powder",
     "description": "Adds depth to dishes, rich in antioxidants",
     "price": 200,
     "imageUrl": "/images/onion_powder.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Mustard Seeds",
     "description": "Rich in selenium, supports metabolism",
     "price": 180,
     "imageUrl": "/images/mustard_seeds.png",
-    "category": "Spice"
+    "category": "Spices"
   },
   {
     "name": "Dill",
@@ -305,41 +305,251 @@
     "description": "Natural sweetener.",
     "price": 150,
     "imageUrl": "/images/jaggery.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Cinnamon Sticks",
     "description": "Adds warmth to beverages and desserts",
     "price": 200,
     "imageUrl": "/images/cinnamon_sticks.png",
-    "category": "Baking & Sweet Spices"
+    "category": "Spices"
   },
   {
     "name": "Moringa Powder",
     "description": "Rich in nutrients, boosts energy",
     "price": 300,
     "imageUrl": "/images/moringa_powder.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Spirulina",
     "description": "High in protein, supports detoxification",
     "price": 400,
     "imageUrl": "/images/spirulina.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Matcha Powder",
     "description": "Rich in antioxidants, boosts focus",
     "price": 500,
     "imageUrl": "/images/matcha_powder.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
   },
   {
     "name": "Elderberry",
     "description": "Supports immune health, rich in antioxidants",
     "price": 300,
     "imageUrl": "/images/elderberry.png",
-    "category": "Wellness-Focused Herbs"
+    "category": "Herbs"
+  },
+  {
+    "name": "Himalayan Salt",
+    "description": "Rich in trace minerals and used both as a seasoning and for its purported health benefits.",
+    "price": 300,
+    "imageUrl": "/images/himalayan.png",
+    "category": "Salt & Seasonings"
+  },
+  {
+    "name": "Dates",
+    "description": "Sweet, chewy dried fruit from date palms, high in natural sugars.",
+    "price": 100,
+    "imageUrl": "/images/dates.png",
+    "category": "Dried Fruits"
+  },
+  {
+    "name": "Stinging Nettle",
+    "description": "Used both as a nutrient‐rich potherb and in traditional teas for its anti-inflammatory benefits.",
+    "price": 200,
+    "imageUrl": "/images/nettle.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Purple Tea",
+    "description": "Celebrated for its high antioxidant profile and unique flavor.",
+    "price": 300,
+    "imageUrl": "/images/purpleTea.png",
+    "category": "Tea & Beverages"
+  },
+  {
+    "name": "Chia Seeds",
+    "description": "Rich in omega-3 fatty acids, dietary fiber, and protein—great for smoothies and baking.",
+    "price": 250,
+    "imageUrl": "/images/chia.png",
+    "category": "Seeds & Nuts"
+  },
+  {
+    "name": "Hibiscus",
+    "description": "Vibrantly colored flowers with a tangy, tart flavor.",
+    "price": 200,
+    "imageUrl": "/images/hibiscus.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Raisins",
+    "description": "Packed with antioxidants and fiber—ideal in baking, cooking, or as a healthy snack.",
+    "price": 350,
+    "imageUrl": "/images/raisins.png",
+    "category": "Dried Fruits"
+  },
+  {
+    "name": "Chicken Masala",
+    "description": "A classic spice blend crafted for Indian chicken dishes, balancing aromatic spices to elevate savory flavors.",
+    "price": 350,
+    "imageUrl": "/images/chickenMasala.png",
+    "category": "Spices"
+  },
+  {
+    "name": "Honey",
+    "description": "Rich in antioxidants and traditionally used both in food and home remedies.",
+    "price": 800,
+    "imageUrl": "/images/honey.png",
+    "category": "Health & Wellness"
+  },
+  {
+    "name": "Milk Thistle",
+    "description": "Known for its liver-protecting properties through its active compound silymarin.",
+    "price": 400,
+    "imageUrl": "/images/milkThistle.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Senna",
+    "description": "Prized for its potent laxative properties to support digestive health.",
+    "price": 200,
+    "imageUrl": "/images/senna.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Rosemary Oil",
+    "description": "Essential oil extracted from rosemary, used in aromatherapy and skincare for its stimulating and anti-inflammatory effects.",
+    "price": 350,
+    "imageUrl": "/images/rosemaryOil.png",
+    "category": "Essential Oils"
+  },
+  {
+    "name": "Jojoba Oil",
+    "description": "Perfect for skin and hair care formulations.",
+    "price": 550,
+    "imageUrl": "/images/jojobaOil.png",
+    "category": "Essential Oils"
+  },
+  {
+    "name": "Githeri Masala",
+    "description": "A locally-inspired spice blend formulated to bring out the best in Githeri.",
+    "price": 300,
+    "imageUrl": "/images/githeriMasala.png",
+    "category": "Spices"
+  },
+  {
+    "name": "Sea Salt",
+    "description": "Used as a seasoning and finishing salt.",
+    "price": 250,
+    "imageUrl": "/images/seaSalt.png",
+    "category": "Salt & Seasonings"
+  },
+  {
+    "name": "Burdock",
+    "description": "Traditionally used for detoxification and to support digestive health.",
+    "price": 200,
+    "imageUrl": "/images/burdock.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Avocado Oil",
+    "description": "Edible oil pressed from avocado pulp, rich in monounsaturated fats and vitamins, ideal for high-heat cooking and skincare.",
+    "price": 600,
+    "imageUrl": "/images/avocadoOil.png",
+    "category": "Plant Oils"
+  },
+  {
+    "name": "Black Maca Root Powder",
+    "description": "Known to boost energy, improve stamina, and balance hormones.",
+    "price": 450,
+    "imageUrl": "/images/blackMacaRoot.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Pistachio Seeds",
+    "description": "Edible seeds from the pistachio tree, a nutrient-rich snack loaded with healthy fats, protein, and antioxidants.",
+    "price": 500,
+    "imageUrl": "/images/pistachioSeeds.png",
+    "category": "Seeds & Nuts"
+  },
+  {
+    "name": "Alfa Alfa",
+    "description": "Also known as alfalfa or lucerne, a nutrient-dense leguminous sprout used in salads, smoothies, and supplements.",
+    "price": 300,
+    "imageUrl": "/images/alfaAlfa.png",
+    "category": "Sprouts & Microgreens"
+  },
+  {
+    "name": "Fish Masala",
+    "description": "A spice blend specifically tailored for fish dishes.",
+    "price": 350,
+    "imageUrl": "/images/fishMasala.png",
+    "category": "Spices"
+  },
+  {
+    "name": "St. John's Wort Powder",
+    "description": "Powdered extract of St. John's Wort, used as a natural remedy for mood support and mild to moderate depression.",
+    "price": 400,
+    "imageUrl": "/images/stJohn.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Retinol Liquid",
+    "description": "A vitamin A derivative, applied in skincare for its anti-aging and skin cell-renewing benefits.",
+    "price": 550,
+    "imageUrl": "/images/retinolLiquid.png",
+    "category": "Skincare"
+  },
+  {
+    "name": "Motherwort Powder",
+    "description": "Traditionally used to support heart health and alleviate anxiety through its calming properties.",
+    "price": 350,
+    "imageUrl": "/images/motherwort.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Bentonite Clay",
+    "description": "An absorbent clay known for its high swelling capacity and mineral content, popular in beauty products and detox regimens.",
+    "price": 300,
+    "imageUrl": "/images/bentoniteClay.png",
+    "category": "Skincare"
+  },
+  {
+    "name": "Dandelion Leaves Powder",
+    "description": "Rich in antioxidants and fiber, used in herbal teas and supplements to support liver and digestive health.",
+    "price": 280,
+    "imageUrl": "/images/dandelionLeavesPowder.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Almonds",
+    "description": "Edible seeds of the almond tree, nourishing and rich in healthy fats, protein, and vitamin E—ideal as a snack or in culinary recipes.",
+    "price": 500,
+    "imageUrl": "/images/almonds.png",
+    "category": "Seeds & Nuts"
+  },
+  {
+    "name": "Avocado Seed Powder",
+    "description": "Offering a boost of fiber and antioxidants to support digestion and overall wellness.",
+    "price": 350,
+    "imageUrl": "/images/avocadoSeedPowder.png",
+    "category": "Herbs"
+  },
+  {
+    "name": "Epsom Salt",
+    "description": "Magnesium sulfate crystals prized for their soothing properties in baths, helping alleviate muscle soreness and promote relaxation.",
+    "price": 300,
+    "imageUrl": "/images/epsomSalt.png",
+    "category": "Health & Wellness"
+  },
+  {
+    "name": "Prunus Africana Powder",
+    "description": "Used to support prostate health and improve male sexual function.",
+    "price": 400,
+    "imageUrl": "/images/prunasAfricana.png",
+    "category": "Herbs"
   }
 ]

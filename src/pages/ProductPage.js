@@ -104,7 +104,13 @@ function ProductPage() {
   );
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <Container
+      maxWidth="lg"
+      sx={{
+        mt: 4,
+        pb: { xs: '150px', sm: '150px' } // Added bottom padding to prevent fixed footer overlap.
+      }}
+    >
       <Typography
         variant="h4"
         align="center"

@@ -151,7 +151,7 @@ function HomePage() {
                 </CardContent>
                 <CardActions>
                   <Button size="small" variant="outlined" component={Link} to="/products">
-                    Learn More
+                    Shop Now
                   </Button>
                 </CardActions>
               </Card>
