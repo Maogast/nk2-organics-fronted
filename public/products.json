@@ -31,7 +31,7 @@
     "name": "Ginger",
     "description": "Digestive aid, often used fresh/dried",
     "price": 200,
-    "imageUrl": "/images/ginger.JPG",
+    "imageUrl": "/images/ginger.png",
     "category": "Herbs"
   },
   {
@@ -395,7 +395,7 @@
     "name": "Chicken Masala",
     "description": "A classic spice blend crafted for Indian chicken dishes, balancing aromatic spices to elevate savory flavors.",
     "price": 350,
-    "imageUrl": "/images/chickenMasala.png",
+    "imageUrl": "/images/chickenMasala.jpg",
     "category": "Spices"
   },
   {
