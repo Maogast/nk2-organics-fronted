@@ -53,7 +53,7 @@ function AboutPage() {
       <Box sx={{ mt: 2 }}>
         <iframe
           title="NK‑Organics Location"
-          src="https://www.google.com/maps/embed?pb=!4v1748929366968!6m8!1m7!1sVj1BmVbfItDdKVLW2Q3YxA!2m2!1d-1.236017279365831!2d36.9172299660182!3f280.5315049184869!4f0.7083235197533782!5f0.7820865974627469"
+          src="https://www.google.com/maps/embed?pb=!4v1748930930671!6m8!1m7!1sVj1BmVbfItDdKVLW2Q3YxA!2m2!1d-1.236017279365831!2d36.9172299660182!3f286.4767724544208!4f4.928959059089593!5f0.7820865974627469"
           width="100%"
           height="450"
           style={{ border: 0 }}

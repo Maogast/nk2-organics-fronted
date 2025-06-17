@@ -33,6 +33,9 @@ const NewsletterSubscription = lazy(() => import('./pages/NewsletterSubscription
 const AdminChatSessions = lazy(() => import('./pages/AdminChatSessions'));
 const AdminChatDetail = lazy(() => import('./pages/AdminChatDetail'));
 
+// Lazy-load the SabbathFooter page so it loads only when needed
+const SabbathFooter = lazy(() => import('./pages/sabbathFooter'));
+
 // A simple error boundary component
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -74,6 +77,9 @@ function App() {
                     <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                     <Route path="/terms" element={<TermsPage />} />
 
+                    {/* Route for the Sabbath page */}
+                    <Route path="/sabbath" element={<SabbathFooter />} />
+
                     {/* Unified Login Page */}
                     <Route path="/login" element={<Auth />} />
 
@@ -104,7 +110,7 @@ function App() {
             <div
               style={{
                 position: 'fixed',
-                bottom: 'calc(90px + 20px)', // leaves space for Footer
+                bottom: 'calc(90px + 20px)', // Adjust to ensure it doesn't overlap with the footers
                 right: 20,
                 zIndex: 1100,
               }}

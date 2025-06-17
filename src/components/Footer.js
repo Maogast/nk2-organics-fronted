@@ -84,7 +84,7 @@ function Footer() {
           <YouTubeIcon fontSize="small" />
         </IconButton>
       </Box>
-      
+
       {/* Quick Navigation Links using React Router's Link */}
       <Box
         sx={{
@@ -119,8 +119,15 @@ function Footer() {
         >
           Terms of Service
         </RouterLink>
+        {/* New link for Sabbath page */}
+        <RouterLink
+          to="/sabbath"
+          style={{ color: 'white', textDecoration: 'none', fontSize: '0.7rem' }}
+        >
+          Sabbath
+        </RouterLink>
       </Box>
-      
+
       {/* Copyright */}
       <Typography variant="caption" sx={{ fontSize: '0.7rem', mt: 0.5 }}>
         © {new Date().getFullYear()} NK-Organics. All rights reserved.
