@@ -1,129 +1,124 @@
-// src/pages/sabbathFooter.js
+// src/pages/SabbathFooter.js
 import React from 'react';
 import './sabbathFooter.css';
 
-function sabbathFooter() {
+function SabbathFooter() {
   return (
     <>
-      {/* ① page wrapper */}
+      {/* ── Page Wrapper ───────────────────────────────────── */}
       <div className="sabbath-page">
         <div className="pamphlet">
-          {/* ——— header ——— */}
-          <div className="header">
+          {/* ── Header ─────────────────────────────────────── */}
+          <header className="header">
             <div className="subtitle">NK-ORGANICS PRESENTS</div>
             <h1 className="main-title">Embrace the True Sabbath</h1>
             <p className="intro">
-              At NK-Organics, we cherish the timeless gift of the true Sabbath—a
-              day set apart by God for genuine rest, worship, and renewal. This
-              sacred rhythm traces back to Creation, upheld by Jesus, and
+              At NK-Organics, we cherish the timeless gift of the true Sabbath —
+              a day set apart by God for genuine rest, worship, and renewal.
+              This sacred rhythm traces back to Creation, upheld by Jesus, and
               honored by the earliest Christians.
             </p>
-          </div>
+          </header>
 
-          {/* ——— biblical foundations ——— */}
+          {/* ── Biblical Foundations ───────────────────────── */}
           <div className="divider" />
-          <div className="section">
+          <section className="section">
             <h2 className="section-title">Biblical Foundations</h2>
             <div className="content">
-              <div className="bible-point">
+              <article className="bible-point">
                 <h3 className="point-title">Created and Sanctified by God</h3>
                 <div className="verse">
-                  &quot;And on the seventh day God ended His work which He had
-                  made; and He rested on the seventh day from all His
-                  work.&quot;
-                  <br />– Genesis 2:1-3
+                  “And on the seventh day God ended His work which He had made;
+                  and He rested on the seventh day from all His work.”
+                  <br />— Genesis 2 : 1-3
                 </div>
                 <p>
-                  The Sabbath stands as a divine memorial of God&apos;s creative
+                  The Sabbath stands as a divine memorial of Godʼs creative
                   power and perfect design.
                 </p>
-              </div>
+              </article>
 
-              <div className="bible-point">
-                <h3 className="point-title">God&apos;s Command for Rest</h3>
+              <article className="bible-point">
+                <h3 className="point-title">Godʼs Command for Rest</h3>
                 <div className="verse">
-                  &quot;Remember the Sabbath day, to keep it holy.&quot;
-                  <br />– Exodus 20:8-11
+                  “Remember the Sabbath day, to keep it holy.”
+                  <br />— Exodus 20 : 8-11
                 </div>
                 <p>
-                  The Sabbath is not a burden but a blessing—a divine
-                  institution woven into God&apos;s law for our benefit.
+                  The Sabbath is not a burden but a blessing — a divine
+                  institution woven into Godʼs law for our benefit.
                 </p>
-              </div>
+              </article>
             </div>
-          </div>
+          </section>
 
-          {/* ——— Jesus & the Sabbath ——— */}
+          {/* ── Jesus & the Sabbath ────────────────────────── */}
           <div className="divider" />
-          <div className="section">
+          <section className="section">
             <h2 className="section-title">Jesus and the True Sabbath</h2>
             <div className="content">
-              <div className="bible-point">
+              <article className="bible-point">
                 <h3 className="point-title">Jesus Observed the Sabbath</h3>
                 <div className="verse">
-                  &quot;And he came to Nazareth, where he had been brought up:
-                  and, as his custom was, he went into the synagogue on the
-                  sabbath day.&quot;
-                  <br />– Luke 4:16
+                  “And He came to Nazareth, where He had been brought up: and,
+                  as His custom was, He went into the synagogue on the Sabbath
+                  day.”
+                  <br />— Luke 4 : 16
                 </div>
                 <p>
                   Our Savior honored the Sabbath throughout His earthly
                   ministry, setting an example for all believers.
                 </p>
-              </div>
+              </article>
 
-              <div className="bible-point">
+              <article className="bible-point">
                 <h3 className="point-title">A Model of True Worship</h3>
                 <div className="verse">
-                  &quot;The sabbath was made for man, and not man for the
-                  sabbath.&quot;
-                  <br />– Mark 2:27
+                  “The Sabbath was made for man, and not man for the Sabbath.”
+                  <br />— Mark 2 : 27
                 </div>
                 <p>
-                  Jesus showed that the Sabbath is a gift for restoration—a time
-                  to renew body, mind, and spirit in communion with God.
+                  Jesus showed that the Sabbath is a gift for restoration — a
+                  time to renew body, mind, and spirit in communion with God.
                 </p>
-              </div>
+              </article>
             </div>
-          </div>
+          </section>
 
-          {/* ——— Early Christians ——— */}
+          {/* ── Early Christians ───────────────────────────── */}
           <div className="divider" />
-          <div className="section">
+          <section className="section">
             <h2 className="section-title">Early Christian Observance</h2>
             <div className="content">
-              <div className="bible-point">
-                <h3 className="point-title">
-                  The Apostles &amp; Early Believers
-                </h3>
+              <article className="bible-point">
+                <h3 className="point-title">The Apostles &amp; Early Believers</h3>
                 <div className="verse">
-                  &quot;And on the sabbath we went out of the city by a river
-                  side, where prayer was wont to be made.&quot;
-                  <br />– Acts 16:13
+                  “And on the Sabbath we went out of the city by a river side,
+                  where prayer was wont to be made.”
+                  <br />— Acts 16 : 13
                 </div>
                 <p>
                   The earliest followers of Christ continued to honor the
-                  seventh-day Sabbath as a testimony to God&apos;s enduring law.
+                  seventh-day Sabbath as a testimony to Godʼs enduring law.
                 </p>
-              </div>
+              </article>
 
-              <div className="bible-point">
-                <h3 className="point-title">A Tradition of Faith</h3>
+              <article className="bible-point">
+                <h3 className="point-title">Paulʼs Regular Practice</h3>
                 <div className="verse">
-                  &quot;And upon the first day of the week, when the disciples
-                  came together to break bread…&quot;
-                  <br />– Acts 20:7
+                  “And he reasoned in the synagogue <strong>every Sabbath</strong>,
+                  and persuaded the Jews and the Greeks.”
+                  <br />— Acts 18 : 4
                 </div>
                 <p>
-                  For millennia, God&apos;s people have set aside the seventh
-                  day—a sacred practice that remains a symbol of His eternal
-                  covenant.
+                  Paulʼs weekly Sabbath worship underscores the New-Testament
+                  continuity of the seventh day.
                 </p>
-              </div>
+              </article>
             </div>
-          </div>
+          </section>
 
-          {/* ——— Call-to-action ——— */}
+          {/* ── Invitation / Call-to-Action ───────────────── */}
           <div className="invitation">
             <h2 className="invitation-title">Our Invitation</h2>
             <p className="invitation-content">
@@ -134,13 +129,13 @@ function sabbathFooter() {
 
             <div className="benefits">
               <div className="benefit">
-                Reflect on God&apos;s creative order and rest in His promises
+                Reflect on Godʼs creative order and rest in His promises
               </div>
               <div className="benefit">
                 Embrace a lifestyle of renewal and fellowship
               </div>
               <div className="benefit">
-                Enjoy our organic creations grown in nature&apos;s rhythm
+                Enjoy our organic creations grown in natureʼs rhythm
               </div>
             </div>
 
@@ -151,17 +146,17 @@ function sabbathFooter() {
             </div>
           </div>
 
-          {/* ——— closing banner ——— */}
-          <div className="footer">
+          {/* ── Closing Banner ─────────────────────────────── */}
+          <footer className="footer">
             NK-Organics – Nourishing Body, Mind, and Spirit
-          </div>
+          </footer>
         </div>
       </div>
 
-      {/* ② invisible spacer = footer height */}
+      {/* Spacer so global fixed footer doesn’t cover the banner */}
       <div className="footer-spacer" />
     </>
   );
 }
 
-export default sabbathFooter;
+export default SabbathFooter;
