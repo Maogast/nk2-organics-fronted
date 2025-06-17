@@ -189,3 +189,13 @@
   .divider{margin:22px 12px;}
   .invitation,.section{padding:22px 18px;}
 }
+/* push whole page above the fixed global footer */
+.footer-spacer {
+  height: 90px;      /* desktop/tablet footer height */
+}
+
+@media (max-width: 600px) {
+  .footer-spacer {
+    height: 70px;    /* mobile footer height */
+  }
+}
